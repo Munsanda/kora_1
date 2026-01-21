@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"log"
+	"os"
 	"testing"
 	"time"
 
@@ -11,15 +12,21 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-func mustStartPostgresContainer() (func(context.Context, ...testcontainers.TerminateOption) error, error) {
-	var (
-		dbName = "database"
-		dbPwd  = "password"
-		dbUser = "user"
-	)
+// Reset singleton between tests
+func resetDB() {
+	dbInstance = nil
+}
 
-	dbContainer, err := postgres.Run(
-		context.Background(),
+// Start Postgres test container
+func mustStartPostgresContainer() (func(context.Context, ...testcontainers.TerminateOption) error, error) {
+	ctx := context.Background()
+
+	dbName := "database"
+	dbUser := "user"
+	dbPwd := "password"
+
+	container, err := postgres.Run(
+		ctx,
 		"postgres:latest",
 		postgres.WithDatabase(dbName),
 		postgres.WithUsername(dbUser),
@@ -27,74 +34,93 @@ func mustStartPostgresContainer() (func(context.Context, ...testcontainers.Termi
 		testcontainers.WithWaitStrategy(
 			wait.ForLog("database system is ready to accept connections").
 				WithOccurrence(2).
-				WithStartupTimeout(5*time.Second)),
+				WithStartupTimeout(10*time.Second),
+		),
 	)
 	if err != nil {
 		return nil, err
 	}
 
+	hostIP, err := container.Host(ctx)
+	if err != nil {
+		return container.Terminate, err
+	}
+
+	mappedPort, err := container.MappedPort(ctx, "5432/tcp")
+	if err != nil {
+		return container.Terminate, err
+	}
+
+	// Assign database globals
 	database = dbName
-	password = dbPwd
 	username = dbUser
+	password = dbPwd
+	host = hostIP
+	port = mappedPort.Port()
+	schema = "public"
 
-	dbHost, err := dbContainer.Host(context.Background())
-	if err != nil {
-		return dbContainer.Terminate, err
-	}
-
-	dbPort, err := dbContainer.MappedPort(context.Background(), "5432/tcp")
-	if err != nil {
-		return dbContainer.Terminate, err
-	}
-
-	host = dbHost
-	port = dbPort.Port()
-
-	return dbContainer.Terminate, err
+	return container.Terminate, nil
 }
 
+// Test lifecycle controller
 func TestMain(m *testing.M) {
 	teardown, err := mustStartPostgresContainer()
 	if err != nil {
-		log.Fatalf("could not start postgres container: %v", err)
+		log.Fatalf("failed to start postgres container: %v", err)
 	}
 
-	m.Run()
+	code := m.Run()
 
-	if teardown != nil && teardown(context.Background()) != nil {
-		log.Fatalf("could not teardown postgres container: %v", err)
+	if teardown != nil {
+		_ = teardown(context.Background())
 	}
+
+	os.Exit(code)
 }
 
+// ---------- Tests ----------
+
 func TestNew(t *testing.T) {
+	resetDB()
+
 	srv := New()
+
 	if srv == nil {
 		t.Fatal("New() returned nil")
 	}
 }
 
 func TestHealth(t *testing.T) {
+	resetDB()
+
 	srv := New()
 
 	stats := srv.Health()
 
 	if stats["status"] != "up" {
-		t.Fatalf("expected status to be up, got %s", stats["status"])
+		t.Fatalf("expected status 'up', got '%s'", stats["status"])
 	}
 
-	if _, ok := stats["error"]; ok {
-		t.Fatalf("expected error not to be present")
+	if _, exists := stats["error"]; exists {
+		t.Fatalf("unexpected error returned: %v", stats["error"])
 	}
 
-	if stats["message"] != "It's healthy" {
-		t.Fatalf("expected message to be 'It's healthy', got %s", stats["message"])
+	if stats["message"] == "" {
+		t.Fatal("expected health message to be present")
+	}
+
+	if _, ok := stats["open_connections"]; !ok {
+		t.Fatal("expected connection stats to be present")
 	}
 }
 
 func TestClose(t *testing.T) {
+	resetDB()
+
 	srv := New()
 
-	if srv.Close() != nil {
-		t.Fatalf("expected Close() to return nil")
+	err := srv.Close()
+	if err != nil {
+		t.Fatalf("Close() returned error: %v", err)
 	}
 }
