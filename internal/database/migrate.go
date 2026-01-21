@@ -12,8 +12,8 @@ func Migrate(db *gorm.DB) {
 
 	err := db.AutoMigrate(
 		&models.Form{},
-		&models.Question{},
-		&models.FormQuestion{},
+		&models.Fields{},
+		&models.FormFields{},
 		&models.Submission{},
 		&models.FormAnswer{},
 	)

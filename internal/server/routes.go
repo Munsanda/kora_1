@@ -1,6 +1,7 @@
 package server
 
 import (
+	"kora_1/internal/handlers"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
@@ -22,7 +23,33 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.GET("/health", s.healthHandler)
 
-	//
+	fields := r.Group("/question")
+	{
+		fields.GET("/:id")
+		fields.POST("/")
+		fields.PATCH("/:id")
+	}
+
+	forms := r.Group("/forms")
+	{
+		forms.GET("/:id")
+		forms.POST("/", handlers.FormHandler)
+		forms.PATCH("/:id")
+	}
+
+	form_fields := r.Group("/form_questions")
+	{
+		form_fields.GET("/:id")
+		form_fields.POST("/")
+		form_fields.PATCH("/:id")
+	}
+
+	answers := r.Group("/answers")
+	{
+		answers.GET("/:id")
+		answers.POST("/")
+	}
+	r.POST("submission")
 
 	return r
 }
@@ -37,4 +64,3 @@ func (s *Server) HelloWorldHandler(c *gin.Context) {
 func (s *Server) healthHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, s.db.Health())
 }
-

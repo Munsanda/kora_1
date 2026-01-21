@@ -2,12 +2,13 @@ package database
 
 import (
 	"context"
-	"gorm.io/driver/postgres"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
 	"time"
+
+	"gorm.io/driver/postgres"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/joho/godotenv/autoload"
@@ -39,7 +40,7 @@ var (
 	dbInstance *service
 )
 
-var db *gorm.DB
+var DB *gorm.DB
 
 func New() Service {
 	// Reuse Connection
@@ -48,14 +49,15 @@ func New() Service {
 	}
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable&search_path=%s", username, password, host, port, database, schema)
 	var err error
-    db, err = gorm.Open(postgres.Open(connStr), &gorm.Config{})
+	DB, err = gorm.Open(postgres.Open(connStr), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	Migrate(db)
+	Migrate(DB)
+
 	dbInstance = &service{
-		db: db,
+		db: DB,
 	}
 	return dbInstance
 }
@@ -110,7 +112,6 @@ func (s *service) Health() map[string]string {
 	return stats
 }
 
-
 // Close closes the database connection.
 // It logs a message indicating the disconnection from the specific database.
 // If the connection is successfully closed, it returns nil.
@@ -124,4 +125,3 @@ func (s *service) Close() error {
 	log.Printf("Disconnected from database: %s", database)
 	return sqlDB.Close()
 }
-
