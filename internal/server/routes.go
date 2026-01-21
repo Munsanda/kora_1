@@ -23,7 +23,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.GET("/health", s.healthHandler)
 
-	fields := r.Group("/question")
+	fields := r.Group("/field")
 	{
 		fields.GET("/:id")
 		fields.POST("/")
@@ -37,7 +37,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		forms.PATCH("/:id")
 	}
 
-	form_fields := r.Group("/form_questions")
+	form_fields := r.Group("/form_fields")
 	{
 		form_fields.GET("/:id")
 		form_fields.POST("/")
