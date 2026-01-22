@@ -583,6 +583,12 @@ type GroupRequest struct {
 	GroupName string `json:"group_name" binding:"required"`
 }
 
+type AddFieldsToGroupRequest struct {
+	FormID   uint   `json:"form_id" binding:"required"`
+	GroupID  uint   `json:"group_id" binding:"required"`
+	FieldIDs []uint `json:"field_ids" binding:"required"`
+}
+
 // CreateGroupHandler creates a new group
 // @Summary      Create a new group
 // @Description  Create a new group with a group name
@@ -782,4 +788,117 @@ func DeleteGroupHandler(c *gin.Context) {
 		Status:  true,
 		Message: "Group deleted successfully",
 	})
+}
+
+// CreateGroupFieldsHandler adds fields to a group in a specific form
+// @Summary      Add fields to group
+// @Description  Add fields to a group within a specific form
+// @Tags         groups
+// @Accept       json
+// @Produce      json
+// @Param        request  body      AddFieldsToGroupRequest  true  "Add Fields to Group Request"
+// @Success      200      {object}  structs.SuccessResponse
+// @Failure      400      {object}  structs.ErrorResponse
+// @Failure      500      {object}  structs.ErrorResponse
+// @Router       /groups/add-fields [post]
+func CreateGroupFieldsHandler(c *gin.Context) {
+	var request AddFieldsToGroupRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, helpers.NewError(err.Error(), http.StatusBadRequest))
+		return
+	}
+
+	err := models.AddFieldsToGroup(database.DB, request.FormID, request.GroupID, request.FieldIDs)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
+		return
+	}
+
+	c.JSON(http.StatusOK, helpers.NewSuccess(request, "Fields added to group successfully"))
+}
+
+// GetGroupFieldsHandler retrieves all fields for a group in a specific form
+// @Summary      Get group fields
+// @Description  Retrieve all fields for a group within a specific form
+// @Tags         groups
+// @Accept       json
+// @Produce      json
+// @Param        form_id   query     int  true  "Form ID"
+// @Param        group_id  query     int  true  "Group ID"
+// @Success      200       {object}  structs.SuccessResponse
+// @Failure      400       {object}  structs.ErrorResponse
+// @Failure      404       {object}  structs.ErrorResponse
+// @Failure      500       {object}  structs.ErrorResponse
+// @Router       /groups/get-fields [get]
+func GetGroupFieldsHandler(c *gin.Context) {
+	formIDStr := c.Query("form_id")
+	groupIDStr := c.Query("group_id")
+
+	if formIDStr == "" || groupIDStr == "" {
+		c.JSON(http.StatusBadRequest, helpers.NewError("form_id and group_id query parameters are required", http.StatusBadRequest))
+		return
+	}
+
+	var formID uint
+	if _, err := parseID(formIDStr, &formID); err != nil {
+		c.JSON(http.StatusBadRequest, helpers.NewError("Invalid form_id format", http.StatusBadRequest))
+		return
+	}
+
+	var groupID uint
+	if _, err := parseID(groupIDStr, &groupID); err != nil {
+		c.JSON(http.StatusBadRequest, helpers.NewError("Invalid group_id format", http.StatusBadRequest))
+		return
+	}
+
+	formFields, err := models.GetAllGroupFields(database.DB, formID, groupID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
+		return
+	}
+
+	// Transform FormFields to response format with Field details
+	var responses []FormFieldResponse
+	for _, formField := range formFields {
+		// Get the associated Field
+		field, err := models.GetFields(database.DB, formField.FieldsID)
+		if err != nil {
+			// Skip fields that can't be found, or log error
+			continue
+		}
+
+		// Convert validations from datatypes.JSON to map[string]interface{}
+		var validationsMap map[string]interface{}
+		if formField.Validations != nil {
+			if err := json.Unmarshal(formField.Validations, &validationsMap); err != nil {
+				validationsMap = make(map[string]interface{})
+			}
+		}
+
+		// Convert meta from datatypes.JSON to map[string]interface{}
+		var metaMap map[string]interface{}
+		if len(field.Meta) > 0 {
+			if err := json.Unmarshal(field.Meta, &metaMap); err != nil {
+				metaMap = make(map[string]interface{})
+			}
+		}
+
+		response := FormFieldResponse{
+			ID:          formField.ID,
+			CreatedAt:   formField.CreatedAt.Format("2006-01-02T15:04:05Z"),
+			UpdatedAt:   formField.UpdatedAt.Format("2006-01-02T15:04:05Z"),
+			FormID:      formField.FormID,
+			FieldsID:    formField.FieldsID,
+			Validations: validationsMap,
+		}
+
+		if formField.DeletedAt.Valid {
+			deletedAt := formField.DeletedAt.Time.Format("2006-01-02T15:04:05Z")
+			response.DeletedAt = &deletedAt
+		}
+
+		responses = append(responses, response)
+	}
+
+	c.JSON(http.StatusOK, helpers.NewSuccess(responses, "Group fields retrieved successfully"))
 }

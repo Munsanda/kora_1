@@ -54,3 +54,11 @@ func UpdateGroup(db *gorm.DB, group *Group) error {
 func DeleteGroup(db *gorm.DB, id uint) error {
 	return db.Delete(&Group{}, id).Error
 }
+
+// GetAllGroupFields retrieves all fields for a specific group in a specific form
+func GetAllGroupFields(db *gorm.DB, formID uint, groupID uint) ([]FormFields, error) {
+	var formFields []FormFields
+	err := db.Where("form_id = ? AND group_id = ?", formID, groupID).
+		Find(&formFields).Error
+	return formFields, err
+}
