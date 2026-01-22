@@ -13,8 +13,9 @@ type Form struct {
 	Fieldss []FormFields `gorm:"constraint:OnDelete:CASCADE"`
 }
 
-func CreateForm(db *gorm.DB, form *Form) error {
-	return db.Create(form).Error
+func CreateForm(db *gorm.DB, form *Form) (*Form, error) {
+	err := db.Create(form).Error
+	return form, err
 }
 
 func GetForm(db *gorm.DB, id uint) (*Form, error) {
