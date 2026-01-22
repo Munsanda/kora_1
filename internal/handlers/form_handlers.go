@@ -126,7 +126,7 @@ type UpdateFormStatusRequest struct {
 
 type FormFieldRequest struct {
 	FormID      uint           `json:"form_id" binding:"required"`
-	FieldsID    uint           `json:"fields_id" binding:"required"`
+	FieldID     uint           `json:"field_id" binding:"required"`
 	Validations datatypes.JSON `json:"validations" binding:"required" swaggertype:"object"`
 }
 
@@ -168,7 +168,7 @@ func CreateFormFieldsHandler(c *gin.Context) {
 
 	formField := &models.FormFields{
 		FormID:      request.FormID,
-		FieldsID:    request.FieldsID,
+		FieldsID:    request.FieldID,
 		Validations: request.Validations,
 	}
 	err := models.CreateFormFields(database.DB, formField)
@@ -220,7 +220,7 @@ func CreateMultipleFormFieldsHandler(c *gin.Context) {
 	for _, request := range requests {
 		formField := &models.FormFields{
 			FormID:      request.FormID,
-			FieldsID:    request.FieldsID,
+			FieldsID:    request.FieldID,
 			Validations: request.Validations,
 		}
 		if err := models.CreateFormFields(database.DB, formField); err != nil {

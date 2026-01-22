@@ -65,7 +65,6 @@ func (s *Server) RegisterRoutes() http.Handler {
 		form_fields.GET("/:id")
 		form_fields.POST("/")
 		// post multiple fields to a form
-		// post multiple fields to a form
 		form_fields.POST("/multiple", handlers.CreateMultipleFormFieldsHandler)
 		form_fields.PATCH("/:id")
 	}
