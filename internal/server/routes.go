@@ -43,7 +43,12 @@ func (s *Server) RegisterRoutes() http.Handler {
 	// 	services.DELETE("/:id")
 	// }
 
-	r.POST("/form", handlers.FormHandler)
+	form := r.Group("/form")
+	{
+		form.POST("/", handlers.FormHandler)
+		form.GET("/:id", handlers.GetFormWithFieldsHandler)
+	}
+	
 
 	fields := r.Group("/field")
 	{

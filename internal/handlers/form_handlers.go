@@ -126,11 +126,11 @@ func UpdateFormStatusHandler(c *gin.Context) {
 // @Tags form
 // @Accept json
 // @Produce json
-// @Param id path int true "Form ID"
+// @Param        id       path      int                    true  "Form ID"
 // @Success 200 {object} FormResponse
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
-// @Router /forms/{id} [get]
+// @Router /form/{id} [get]
 func GetFormWithFieldsHandler(c *gin.Context) {
 	id := c.Param("id")
 

@@ -10,6 +10,7 @@ type Form struct {
 	Status      int    `gorm:"default:0"`
 	Version     int    `gorm:"default:1"`
 
+	
 	Fields []Field `gorm:"many2many:form_fields;"`
 }
 
