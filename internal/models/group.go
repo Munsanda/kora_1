@@ -1,10 +1,6 @@
 package models
 
-import (
-	"fmt"
-
-	"gorm.io/gorm"
-)
+import "gorm.io/gorm"
 
 type Group struct {
 	gorm.Model
@@ -16,19 +12,8 @@ func CreateGroup(db *gorm.DB, group *Group) error {
 }
 
 func AddFieldsToGroup(db *gorm.DB, formID uint, groupID uint, fieldIDs []uint) error {
-	// First, verify that all fields belong to the specified form
-	var count int64
-	err := db.Model(&FormFields{}).
-		Where("form_id = ? AND fields_id IN ?", formID, fieldIDs).
-		Count(&count).Error
-	if err != nil {
-		return err
-	}
-	if int(count) != len(fieldIDs) {
-		return fmt.Errorf("some fields do not belong to form %d", formID)
-	}
-
 	// Update the group_id for the specified fields in the form
+	// Only updates fields that exist in the form - fields that don't exist are simply skipped
 	return db.Model(&FormFields{}).
 		Where("form_id = ? AND fields_id IN ?", formID, fieldIDs).
 		Update("group_id", groupID).Error

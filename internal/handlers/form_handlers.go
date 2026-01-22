@@ -167,13 +167,6 @@ type FormFieldResponse struct {
 	Validations map[string]interface{} `json:"validations" swaggertype:"object"`
 }
 
-// FormFieldSuccessResponse is a success response containing FormFields data
-type FormFieldSuccessResponse struct {
-	Status  bool              `json:"status"`
-	Message string            `json:"message,omitempty"`
-	Data    FormFieldResponse `json:"data,omitempty"`
-}
-
 // CreateFormFieldsHandler creates a form field association
 // @Summary      Create form field
 // @Description  Create an association between a form and a field with validations
@@ -181,7 +174,7 @@ type FormFieldSuccessResponse struct {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      FormFieldRequest  true  "Form Field Request"
-// @Success      200      {object}  FormFieldSuccessResponse
+// @Success      200      {object}  object
 // @Failure      400      {object}  structs.ErrorResponse
 // @Failure      500      {object}  structs.ErrorResponse
 // @Router       /form_fields [post]
@@ -231,7 +224,7 @@ func CreateFormFieldsHandler(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      []FormFieldRequest  true  "Form Field Requests"
-// @Success      202      {object}  MultipleFormFieldsSuccessResponse
+// @Success      202      {object}  object
 // @Failure      400      {object}  structs.ErrorResponse
 // @Failure      500      {object}  structs.ErrorResponse
 // @Router       /form_fields/multiple [post]
@@ -288,20 +281,6 @@ type FieldRequest struct {
 	// Meta  datatypes.JSON `json:"meta" swaggertype:"object"`
 }
 
-// FieldCreateSuccessResponse is a success response for field creation operations
-type FieldCreateSuccessResponse struct {
-	Status  bool         `json:"status"`
-	Message string       `json:"message,omitempty"`
-	Data    FieldRequest `json:"data,omitempty"`
-}
-
-// FieldUpdateSuccessResponse is a success response for field update operations
-type FieldUpdateSuccessResponse struct {
-	Status  bool         `json:"status"`
-	Message string       `json:"message,omitempty"`
-	Data    FieldRequest `json:"data,omitempty"`
-}
-
 // FieldResponse is a Swagger-friendly representation of Fields (without gorm.Model)
 type FieldResponse struct {
 	ID        uint                   `json:"id" example:"1"`
@@ -311,19 +290,6 @@ type FieldResponse struct {
 	Label     string                 `json:"label" example:"First Name"`
 	Type      string                 `json:"type" example:"text"`
 	Meta      map[string]interface{} `json:"meta" swaggertype:"object"`
-}
-
-// FieldGetSuccessResponse is a success response for field retrieval operations
-type FieldGetSuccessResponse struct {
-	Status  bool          `json:"status"`
-	Message string        `json:"message,omitempty"`
-	Data    FieldResponse `json:"data,omitempty"`
-}
-
-// FieldDeleteSuccessResponse is a success response for field deletion operations
-type FieldDeleteSuccessResponse struct {
-	Status  bool   `json:"status"`
-	Message string `json:"message,omitempty"`
 }
 
 // FormResponse is a Swagger-friendly representation of Form (without gorm.Model)
@@ -339,13 +305,6 @@ type FormResponse struct {
 	Version     int     `json:"version" example:"1"`
 }
 
-// FormCreateSuccessResponse is a success response for form creation operations
-type FormCreateSuccessResponse struct {
-	Status  bool        `json:"status"`
-	Message string      `json:"message,omitempty"`
-	Data    FormRequest `json:"data,omitempty"`
-}
-
 // GroupResponse is a Swagger-friendly representation of Group (without gorm.Model)
 type GroupResponse struct {
 	ID        uint    `json:"id" example:"1"`
@@ -355,47 +314,6 @@ type GroupResponse struct {
 	GroupName string  `json:"group_name" example:"Personal Information"`
 }
 
-// GroupCreateSuccessResponse is a success response for group creation operations
-type GroupCreateSuccessResponse struct {
-	Status  bool         `json:"status"`
-	Message string       `json:"message,omitempty"`
-	Data    GroupRequest `json:"data,omitempty"`
-}
-
-// GroupGetSuccessResponse is a success response for group retrieval operations
-type GroupGetSuccessResponse struct {
-	Status  bool          `json:"status"`
-	Message string        `json:"message,omitempty"`
-	Data    GroupResponse `json:"data,omitempty"`
-}
-
-// GroupsListSuccessResponse is a success response for listing all groups
-type GroupsListSuccessResponse struct {
-	Status  bool            `json:"status"`
-	Message string          `json:"message,omitempty"`
-	Data    []GroupResponse `json:"data,omitempty"`
-}
-
-// GroupUpdateSuccessResponse is a success response for group update operations
-type GroupUpdateSuccessResponse struct {
-	Status  bool         `json:"status"`
-	Message string       `json:"message,omitempty"`
-	Data    GroupRequest `json:"data,omitempty"`
-}
-
-// GroupDeleteSuccessResponse is a success response for group deletion operations
-type GroupDeleteSuccessResponse struct {
-	Status  bool   `json:"status"`
-	Message string `json:"message,omitempty"`
-}
-
-// MultipleFormFieldsSuccessResponse is a success response for multiple form fields creation
-type MultipleFormFieldsSuccessResponse struct {
-	Status  bool                `json:"status"`
-	Message string              `json:"message,omitempty"`
-	Data    []FormFieldResponse `json:"data,omitempty"`
-}
-
 // CreateFieldHandler creates a new field
 // @Summary      Create a new field
 // @Description  Create a new field with label, type, and metadata
@@ -403,7 +321,7 @@ type MultipleFormFieldsSuccessResponse struct {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      FieldRequest  true  "Field Request"
-// @Success      201      {object}  FieldCreateSuccessResponse
+// @Success      201      {object}  object
 // @Failure      400      {object}  structs.ErrorResponse
 // @Failure      500      {object}  structs.ErrorResponse
 // @Router       /field [post]
@@ -435,7 +353,7 @@ func CreateFieldHandler(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Field ID"
-// @Success      200  {object}  FieldGetSuccessResponse
+// @Success      200  {object}  object
 // @Failure      400  {object}  structs.ErrorResponse
 // @Failure      404  {object}  structs.ErrorResponse
 // @Router       /field/{id} [get]
@@ -479,11 +397,7 @@ func GetFieldHandler(c *gin.Context) {
 		fieldResponse.DeletedAt = &deletedAt
 	}
 
-	c.JSON(http.StatusOK, FieldGetSuccessResponse{
-		Status:  true,
-		Message: "Field retrieved successfully",
-		Data:    fieldResponse,
-	})
+	c.JSON(http.StatusOK, helpers.NewSuccess(fieldResponse, "Field retrieved successfully"))
 }
 
 // UpdateFieldHandler updates a field by ID
@@ -494,7 +408,7 @@ func GetFieldHandler(c *gin.Context) {
 // @Produce      json
 // @Param        id       path      int           true  "Field ID"
 // @Param        request  body      FieldRequest  true  "Field Request"
-// @Success      200      {object}  FieldUpdateSuccessResponse
+// @Success      200      {object}  object
 // @Failure      400      {object}  structs.ErrorResponse
 // @Failure      500      {object}  structs.ErrorResponse
 // @Router       /field/{id} [patch]
@@ -539,7 +453,7 @@ func UpdateFieldHandler(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Field ID"
-// @Success      200  {object}  FieldDeleteSuccessResponse
+// @Success      200  {object}  object
 // @Failure      400  {object}  structs.ErrorResponse
 // @Failure      500  {object}  structs.ErrorResponse
 // @Router       /field/{id} [delete]
@@ -562,10 +476,7 @@ func DeleteFieldHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, FieldDeleteSuccessResponse{
-		Status:  true,
-		Message: "Field deleted successfully",
-	})
+	c.JSON(http.StatusOK, helpers.NewSuccess[interface{}](nil, "Field deleted successfully"))
 }
 
 func parseID(id string, fieldID *uint) (bool, error) {
@@ -596,7 +507,7 @@ type AddFieldsToGroupRequest struct {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      GroupRequest  true  "Group Request"
-// @Success      201      {object}  GroupCreateSuccessResponse
+// @Success      201      {object}  object
 // @Failure      400      {object}  structs.ErrorResponse
 // @Failure      500      {object}  structs.ErrorResponse
 // @Router       /groups [post]
@@ -626,7 +537,7 @@ func CreateGroupHandler(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Group ID"
-// @Success      200  {object}  GroupGetSuccessResponse
+// @Success      200  {object}  object
 // @Failure      400  {object}  structs.ErrorResponse
 // @Failure      404  {object}  structs.ErrorResponse
 // @Router       /groups/{id} [get]
@@ -664,11 +575,7 @@ func GetGroupByIDHandler(c *gin.Context) {
 		groupResponse.DeletedAt = &deletedAt
 	}
 
-	c.JSON(http.StatusOK, GroupGetSuccessResponse{
-		Status:  true,
-		Message: "Group retrieved successfully",
-		Data:    groupResponse,
-	})
+	c.JSON(http.StatusOK, helpers.NewSuccess(groupResponse, "Group retrieved successfully"))
 }
 
 // GetAllGroupsHandler retrieves all groups
@@ -677,7 +584,7 @@ func GetGroupByIDHandler(c *gin.Context) {
 // @Tags         groups
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}  GroupsListSuccessResponse
+// @Success      200  {object}  object
 // @Failure      500  {object}  structs.ErrorResponse
 // @Router       /groups [get]
 func GetAllGroupsHandler(c *gin.Context) {
@@ -703,11 +610,7 @@ func GetAllGroupsHandler(c *gin.Context) {
 		groupsResponse[i] = groupResp
 	}
 
-	c.JSON(http.StatusOK, GroupsListSuccessResponse{
-		Status:  true,
-		Message: "Groups retrieved successfully",
-		Data:    groupsResponse,
-	})
+	c.JSON(http.StatusOK, helpers.NewSuccess(groupsResponse, "Groups retrieved successfully"))
 }
 
 // UpdateGroupHandler updates a group by ID
@@ -718,7 +621,7 @@ func GetAllGroupsHandler(c *gin.Context) {
 // @Produce      json
 // @Param        id       path      int           true  "Group ID"
 // @Param        request  body      GroupRequest  true  "Group Request"
-// @Success      200      {object}  GroupUpdateSuccessResponse
+// @Success      200      {object}  object
 // @Failure      400      {object}  structs.ErrorResponse
 // @Failure      500      {object}  structs.ErrorResponse
 // @Router       /groups/{id} [patch]
@@ -761,7 +664,7 @@ func UpdateGroupHandler(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Group ID"
-// @Success      200  {object}  GroupDeleteSuccessResponse
+// @Success      200  {object}  object
 // @Failure      400  {object}  structs.ErrorResponse
 // @Failure      500  {object}  structs.ErrorResponse
 // @Router       /groups/{id} [delete]
@@ -784,10 +687,7 @@ func DeleteGroupHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, GroupDeleteSuccessResponse{
-		Status:  true,
-		Message: "Group deleted successfully",
-	})
+	c.JSON(http.StatusOK, helpers.NewSuccess[interface{}](nil, "Group deleted successfully"))
 }
 
 // CreateGroupFieldsHandler adds fields to a group in a specific form
@@ -797,7 +697,7 @@ func DeleteGroupHandler(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      AddFieldsToGroupRequest  true  "Add Fields to Group Request"
-// @Success      200      {object}  structs.SuccessResponse
+// @Success      200      {object}  object
 // @Failure      400      {object}  structs.ErrorResponse
 // @Failure      500      {object}  structs.ErrorResponse
 // @Router       /groups/add-fields [post]
@@ -825,7 +725,7 @@ func CreateGroupFieldsHandler(c *gin.Context) {
 // @Produce      json
 // @Param        form_id   query     int  true  "Form ID"
 // @Param        group_id  query     int  true  "Group ID"
-// @Success      200       {object}  structs.SuccessResponse
+// @Success      200       {object}  object
 // @Failure      400       {object}  structs.ErrorResponse
 // @Failure      404       {object}  structs.ErrorResponse
 // @Failure      500       {object}  structs.ErrorResponse

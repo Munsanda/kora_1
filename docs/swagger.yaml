@@ -1,62 +1,21 @@
 basePath: /
 definitions:
-  handlers.FieldCreateSuccessResponse:
+  handlers.AddFieldsToGroupRequest:
     properties:
-      data:
-        $ref: '#/definitions/handlers.FieldRequest'
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.FieldDeleteSuccessResponse:
-    properties:
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.FieldGetSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.FieldResponse'
-      message:
-        type: string
-      status:
-        type: boolean
+      field_ids:
+        items:
+          type: integer
+        type: array
+      form_id:
+        type: integer
+      group_id:
+        type: integer
+    required:
+    - field_ids
+    - form_id
+    - group_id
     type: object
   handlers.FieldRequest:
-    type: object
-  handlers.FieldResponse:
-    properties:
-      created_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-      deleted_at:
-        type: string
-      id:
-        example: 1
-        type: integer
-      label:
-        example: First Name
-        type: string
-      meta:
-        type: object
-      type:
-        example: text
-        type: string
-      updated_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-    type: object
-  handlers.FieldUpdateSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.FieldRequest'
-      message:
-        type: string
-      status:
-        type: boolean
     type: object
   handlers.FormCreateResponse:
     properties:
@@ -95,37 +54,6 @@ definitions:
     - form_id
     - validations
     type: object
-  handlers.FormFieldResponse:
-    properties:
-      created_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-      deleted_at:
-        type: string
-      fields_id:
-        example: 1
-        type: integer
-      form_id:
-        example: 1
-        type: integer
-      id:
-        example: 1
-        type: integer
-      updated_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-      validations:
-        type: object
-    type: object
-  handlers.FormFieldSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.FormFieldResponse'
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
   handlers.FormRequest:
     properties:
       description:
@@ -142,120 +70,12 @@ definitions:
     - service_id
     - title
     type: object
-  handlers.GroupCreateSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.GroupRequest'
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.GroupDeleteSuccessResponse:
-    properties:
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.GroupGetSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.GroupResponse'
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
   handlers.GroupRequest:
     properties:
       group_name:
         type: string
     required:
     - group_name
-    type: object
-  handlers.AddFieldsToGroupRequest:
-    properties:
-      field_ids:
-        items:
-          type: integer
-        type: array
-      form_id:
-        type: integer
-      group_id:
-        type: integer
-    required:
-    - field_ids
-    - form_id
-    - group_id
-    type: object
-  handlers.AddFieldsToGroupSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.AddFieldsToGroupRequest'
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.GroupFieldsSuccessResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/handlers.FormFieldResponse'
-        type: array
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.GroupResponse:
-    properties:
-      created_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-      deleted_at:
-        type: string
-      group_name:
-        example: Personal Information
-        type: string
-      id:
-        example: 1
-        type: integer
-      updated_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-    type: object
-  handlers.GroupUpdateSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.GroupRequest'
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.GroupsListSuccessResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/handlers.GroupResponse'
-        type: array
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.MultipleFormFieldsSuccessResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/handlers.FormFieldResponse'
-        type: array
-      message:
-        type: string
-      status:
-        type: boolean
     type: object
   handlers.ReservedNameCreateSuccessResponse:
     properties:
@@ -367,7 +187,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handlers.FieldCreateSuccessResponse'
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -396,7 +216,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.FieldDeleteSuccessResponse'
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -424,7 +244,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.FieldGetSuccessResponse'
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -458,7 +278,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.FieldUpdateSuccessResponse'
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -556,7 +376,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.FormFieldSuccessResponse'
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -588,7 +408,7 @@ paths:
         "202":
           description: Accepted
           schema:
-            $ref: '#/definitions/handlers.MultipleFormFieldsSuccessResponse'
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -611,7 +431,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.GroupsListSuccessResponse'
+            type: object
         "500":
           description: Internal Server Error
           schema:
@@ -636,7 +456,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handlers.GroupCreateSuccessResponse'
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -665,7 +485,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.GroupDeleteSuccessResponse'
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -693,7 +513,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.GroupGetSuccessResponse'
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -727,7 +547,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.GroupUpdateSuccessResponse'
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -757,7 +577,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.AddFieldsToGroupSuccessResponse'
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -791,7 +611,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.GroupFieldsSuccessResponse'
+            type: object
         "400":
           description: Bad Request
           schema:
