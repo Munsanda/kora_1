@@ -235,7 +235,7 @@ const docTemplate = `{
         },
         "/form": {
             "post": {
-                "description": "Create a new reserved name with the provided name",
+                "description": "Create a new form name with the provided fields",
                 "consumes": [
                     "application/json"
                 ],
@@ -243,9 +243,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "reserved-name"
+                    "form"
                 ],
-                "summary": "Create a new reserved name",
+                "summary": "Create a new form name",
                 "parameters": [
                     {
                         "description": "Form Request",
@@ -863,13 +863,6 @@ const docTemplate = `{
         "handlers.FormCreateResponse": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
                 "description": {
                     "type": "string",
                     "example": "A form to collect contact information"
@@ -885,10 +878,6 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "example": "Contact Form"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
                 }
             }
         },

@@ -28,13 +28,10 @@ type FormRequest struct {
 }
 
 type FormCreateResponse struct {
-	ID          uint    `json:"id" example:"1"`
-	CreatedAt   string  `json:"created_at" example:"2024-01-01T00:00:00Z"`
-	UpdatedAt   string  `json:"updated_at" example:"2024-01-01T00:00:00Z"`
-	DeletedAt   *string `json:"deleted_at,omitempty"`
-	Title       string  `json:"title" example:"Contact Form"`
-	Description string  `json:"description" example:"A form to collect contact information"`
-	ServiceID   int     `json:"service_id" example:"1"`
+	ID          uint   `json:"id" example:"1"`
+	Title       string `json:"title" example:"Contact Form"`
+	Description string `json:"description" example:"A form to collect contact information"`
+	ServiceID   int    `json:"service_id" example:"1"`
 }
 
 // CreateReservedNameHandler creates a new reserved name

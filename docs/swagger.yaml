@@ -72,11 +72,6 @@ definitions:
     type: object
   handlers.FormCreateResponse:
     properties:
-      created_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-      deleted_at:
-        type: string
       description:
         example: A form to collect contact information
         type: string
@@ -88,9 +83,6 @@ definitions:
         type: integer
       title:
         example: Contact Form
-        type: string
-      updated_at:
-        example: "2024-01-01T00:00:00Z"
         type: string
     type: object
   handlers.FormFieldReference:
@@ -459,7 +451,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new reserved name with the provided name
+      description: Create a new form name with the provided fields
       parameters:
       - description: Form Request
         in: body
@@ -482,9 +474,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/structs.ErrorResponse'
-      summary: Create a new reserved name
+      summary: Create a new form name
       tags:
-      - reserved-name
+      - form
   /form/{id}/status:
     patch:
       consumes:
