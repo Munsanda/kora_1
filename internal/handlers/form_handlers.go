@@ -65,7 +65,7 @@ func FormHandler(c *gin.Context) {
 	}
 }
 
-//patch form handler here...
+// patch form handler here...
 // UpdateFormStatusHandler updates a form's status by ID
 // @Summary      Update form status
 // @Description  Update the status of an existing form by its ID
@@ -113,7 +113,6 @@ func UpdateFormStatusHandler(c *gin.Context) {
 type UpdateFormStatusRequest struct {
 	Status string `json:"status" binding:"required"`
 }
-
 
 type FormFieldRequest struct {
 	FormID      uint           `json:"form_id" binding:"required"`
@@ -178,13 +177,13 @@ func CreateMultipleFormFieldsHandler(c *gin.Context) {
 	c.JSON(http.StatusAccepted, helpers.NewSuccess(requests, "Form fields created successfully"))
 }
 
-
 // Field Handlers
 
 type FieldRequest struct {
-	Label string         `json:"label" binding:"required"`
-	Type  string         `json:"type" binding:"required"`
-	Meta  datatypes.JSON `json:"meta"`
+	Label      string         `json:"label" binding:"required"`
+	Type       string         `json:"type" binding:"required"`
+	Meta       datatypes.JSON `json:"meta"`
+	IsRequired bool           `json:"is_required"`
 }
 
 // CreateFieldHandler creates a new field
@@ -206,9 +205,10 @@ func CreateFieldHandler(c *gin.Context) {
 	}
 
 	err := models.CreateFields(database.DB, &models.Fields{
-		Label: request.Label,
-		Type:  request.Type,
-		Meta:  request.Meta,
+		Label:      request.Label,
+		Type:       request.Type,
+		Meta:       request.Meta,
+		IsRequired: request.IsRequired,
 	})
 
 	if err != nil {
@@ -217,8 +217,7 @@ func CreateFieldHandler(c *gin.Context) {
 	}
 
 	c.JSON(201, gin.H{
-		"message": "Field created successfully",
-		"data":    request,
+		"data": helpers.NewSuccess(request, "field created successfully"),
 	})
 }
 
