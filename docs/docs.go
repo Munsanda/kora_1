@@ -898,12 +898,12 @@ const docTemplate = `{
         "handlers.FormFieldRequest": {
             "type": "object",
             "required": [
-                "fields_id",
+                "field_id",
                 "form_id",
                 "validations"
             ],
             "properties": {
-                "fields_id": {
+                "field_id": {
                     "type": "integer"
                 },
                 "form_id": {

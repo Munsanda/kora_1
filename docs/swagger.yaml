@@ -96,14 +96,14 @@ definitions:
     type: object
   handlers.FormFieldRequest:
     properties:
-      fields_id:
+      field_id:
         type: integer
       form_id:
         type: integer
       validations:
         type: object
     required:
-    - fields_id
+    - field_id
     - form_id
     - validations
     type: object
