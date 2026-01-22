@@ -147,14 +147,11 @@ func GetFormWithFieldsHandler(c *gin.Context) {
 
 	form, err := models.GetForm(database.DB, formID)
 	if err != nil {
-		c.JSON(404, gin.H{"error": "Form not found"})
+		c.JSON(http.StatusNotFound, helpers.NewError(err.Error(), http.StatusNotFound))
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"message": "Form retrieved successfully",
-		"data":    form,
-	})
+	c.JSON(http.StatusOK, helpers.NewSuccess(form, "Form retrieved successfully"))
 }
 
 type UpdateFormStatusRequest struct {
