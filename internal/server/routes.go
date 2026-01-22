@@ -28,6 +28,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.GET("/health", s.healthHandler)
 
+	r.POST("/form", handlers.FormHandler)
+
 	fields := r.Group("/field")
 	{
 		fields.GET("/:id", handlers.GetFieldHandler)
