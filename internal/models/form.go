@@ -7,7 +7,7 @@ type Form struct {
 	Title       string `gorm:"size:150;not null"`
 	Description string `gorm:"type:text"`
 	ServiceId   int    `gorm:"size:100"`
-	Status      int    `gorm:"default:1"`
+	Status      int    `gorm:"default:0"`
 	Version     int    `gorm:"default:1"`
 
 	Fieldss []FormFields `gorm:"constraint:OnDelete:CASCADE"`
