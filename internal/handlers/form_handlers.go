@@ -38,9 +38,9 @@ type FormCreateResponse struct {
 }
 
 // CreateReservedNameHandler creates a new reserved name
-// @Summary      Create a new reserved name
-// @Description  Create a new reserved name with the provided name
-// @Tags         reserved-name
+// @Summary      Create a new form name
+// @Description  Create a new form name with the provided fields
+// @Tags         form
 // @Accept       json
 // @Produce      json
 // @Param        request  body      FormRequest  true  "Form Request"
