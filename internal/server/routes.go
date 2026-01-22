@@ -33,14 +33,14 @@ func (s *Server) RegisterRoutes() http.Handler {
 		reserved_name.GET("/:name", handlers.GetReservedNameHandler)
 	}
 
-	services := r.Group("/services")
-	{
-		services.GET("/:id")
-		services.GET("/")
-		services.POST("/")
-		services.PATCH("/:id")
-		services.DELETE("/:id")
-	}
+	// services := r.Group("/services")
+	// {
+	// 	services.GET("/:id")
+	// 	services.GET("/")
+	// 	services.POST("/")
+	// 	services.PATCH("/:id")
+	// 	services.DELETE("/:id")
+	// }
 
 	r.POST("/form", handlers.FormHandler)
 

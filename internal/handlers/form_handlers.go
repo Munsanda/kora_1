@@ -283,9 +283,9 @@ type FieldRequest struct {
 	Type       string         `json:"type" binding:"required"`
 	Meta       datatypes.JSON `json:"meta"`
 	IsRequired bool           `json:"is_required"`
-	Label string         `json:"label" binding:"required" example:"First Name"`
-	Type  string         `json:"type" binding:"required" example:"text"`
-	Meta  datatypes.JSON `json:"meta" swaggertype:"object"`
+	// Label string         `json:"label" binding:"required" example:"First Name"`
+	// Type  string         `json:"type" binding:"required" example:"text"`
+	// Meta  datatypes.JSON `json:"meta" swaggertype:"object"`
 }
 
 // FieldCreateSuccessResponse is a success response for field creation operations
