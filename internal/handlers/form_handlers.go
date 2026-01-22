@@ -1,11 +1,11 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"kora_1/internal/database"
 	"kora_1/internal/helpers"
 	"kora_1/internal/models"
-	_ "kora_1/internal/structs" // Required for Swagger annotations
 	"net/http"
 	"strconv"
 
@@ -28,14 +28,14 @@ type FormRequest struct {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      FormRequest  true  "Form Request"
-// @Success      200      {object}  structs.SuccessResponse
+// @Success      200      {object}  FormCreateSuccessResponse
 // @Failure      400      {object}  structs.ErrorResponse
 // @Failure      500      {object}  structs.ErrorResponse
 // @Router       /form [post]
 func FormHandler(c *gin.Context) {
 	var request FormRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, helpers.NewError(err.Error(), http.StatusBadRequest))
 		return
 	}
 
@@ -45,15 +45,9 @@ func FormHandler(c *gin.Context) {
 		ServiceId:   request.ServiceID,
 	})
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
 		return
 	}
-
-	// TODO:: Return PACRA Response
-	c.JSON(200, gin.H{
-		"message": "Hello, World!",
-		"data":    request,
-	})
 
 	if request.Fields != nil {
 		for _, field := range request.Fields {
@@ -64,12 +58,32 @@ func FormHandler(c *gin.Context) {
 			})
 		}
 	}
+
+	c.JSON(http.StatusOK, helpers.NewSuccess(request, "Form created successfully"))
 }
 
 type FormFieldRequest struct {
 	FormID      uint           `json:"form_id" binding:"required"`
 	FieldsID    uint           `json:"fields_id" binding:"required"`
 	Validations datatypes.JSON `json:"validations" binding:"required"`
+}
+
+// FormFieldResponse is a Swagger-friendly representation of FormFields (without gorm.Model)
+type FormFieldResponse struct {
+	ID          uint                   `json:"id" example:"1"`
+	CreatedAt   string                 `json:"created_at" example:"2024-01-01T00:00:00Z"`
+	UpdatedAt   string                 `json:"updated_at" example:"2024-01-01T00:00:00Z"`
+	DeletedAt   *string                `json:"deleted_at,omitempty"`
+	FormID      uint                   `json:"form_id" example:"1"`
+	FieldsID    uint                   `json:"fields_id" example:"1"`
+	Validations map[string]interface{} `json:"validations" swaggertype:"object"`
+}
+
+// FormFieldSuccessResponse is a success response containing FormFields data
+type FormFieldSuccessResponse struct {
+	Status  bool              `json:"status"`
+	Message string            `json:"message,omitempty"`
+	Data    FormFieldResponse `json:"data,omitempty"`
 }
 
 // CreateFormFieldsHandler creates a form field association
@@ -79,25 +93,41 @@ type FormFieldRequest struct {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      FormFieldRequest  true  "Form Field Request"
-// @Success      200      {object}  map[string]interface{}
-// @Failure      400      {object}  map[string]interface{}
+// @Success      200      {object}  FormFieldSuccessResponse
+// @Failure      400      {object}  structs.ErrorResponse
+// @Failure      500      {object}  structs.ErrorResponse
 // @Router       /form_fields [post]
 func CreateFormFieldsHandler(c *gin.Context) {
 	var request FormFieldRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, helpers.NewError(err.Error(), http.StatusBadRequest))
 		return
 	}
 
-	models.CreateFormFields(database.DB, &models.FormFields{
+	err := models.CreateFormFields(database.DB, &models.FormFields{
 		FormID:      request.FormID,
 		FieldsID:    request.FieldsID,
 		Validations: request.Validations,
 	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
+		return
+	}
 
-	c.JSON(200, gin.H{
-		"message": "Form fields created successfully",
-		"data":    request,
+	// Create response with FormFieldResponse structure
+	response := FormFieldResponse{
+		ID:          0, // This would be set from the created record
+		CreatedAt:   "",
+		UpdatedAt:   "",
+		FormID:      request.FormID,
+		FieldsID:    request.FieldsID,
+		Validations: make(map[string]interface{}),
+	}
+
+	c.JSON(http.StatusOK, FormFieldSuccessResponse{
+		Status:  true,
+		Message: "Form fields created successfully",
+		Data:    response,
 	})
 }
 
@@ -108,8 +138,9 @@ func CreateFormFieldsHandler(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      []FormFieldRequest  true  "Form Field Requests"
-// @Success      202      {object}  map[string]interface{}
-// @Failure      400      {object}  map[string]interface{}
+// @Success      202      {object}  MultipleFormFieldsSuccessResponse
+// @Failure      400      {object}  structs.ErrorResponse
+// @Failure      500      {object}  structs.ErrorResponse
 // @Router       /form_fields/multiple [post]
 func CreateMultipleFormFieldsHandler(c *gin.Context) {
 	var requests []FormFieldRequest
@@ -119,11 +150,14 @@ func CreateMultipleFormFieldsHandler(c *gin.Context) {
 	}
 
 	for _, request := range requests {
-		models.CreateFormFields(database.DB, &models.FormFields{
+		if err := models.CreateFormFields(database.DB, &models.FormFields{
 			FormID:      request.FormID,
 			FieldsID:    request.FieldsID,
 			Validations: request.Validations,
-		})
+		}); err != nil {
+			c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
+			return
+		}
 	}
 
 	c.JSON(http.StatusAccepted, helpers.NewSuccess(requests, "Form fields created successfully"))
@@ -132,9 +166,117 @@ func CreateMultipleFormFieldsHandler(c *gin.Context) {
 // Field Handlers
 
 type FieldRequest struct {
-	Label string         `json:"label" binding:"required"`
-	Type  string         `json:"type" binding:"required"`
-	Meta  datatypes.JSON `json:"meta"`
+	Label string         `json:"label" binding:"required" example:"First Name"`
+	Type  string         `json:"type" binding:"required" example:"text"`
+	Meta  datatypes.JSON `json:"meta" swaggertype:"object"`
+}
+
+// FieldCreateSuccessResponse is a success response for field creation operations
+type FieldCreateSuccessResponse struct {
+	Status  bool         `json:"status"`
+	Message string       `json:"message,omitempty"`
+	Data    FieldRequest `json:"data,omitempty"`
+}
+
+// FieldUpdateSuccessResponse is a success response for field update operations
+type FieldUpdateSuccessResponse struct {
+	Status  bool         `json:"status"`
+	Message string       `json:"message,omitempty"`
+	Data    FieldRequest `json:"data,omitempty"`
+}
+
+// FieldResponse is a Swagger-friendly representation of Fields (without gorm.Model)
+type FieldResponse struct {
+	ID        uint                   `json:"id" example:"1"`
+	CreatedAt string                 `json:"created_at" example:"2024-01-01T00:00:00Z"`
+	UpdatedAt string                 `json:"updated_at" example:"2024-01-01T00:00:00Z"`
+	DeletedAt *string                `json:"deleted_at,omitempty"`
+	Label     string                 `json:"label" example:"First Name"`
+	Type      string                 `json:"type" example:"text"`
+	Meta      map[string]interface{} `json:"meta" swaggertype:"object"`
+}
+
+// FieldGetSuccessResponse is a success response for field retrieval operations
+type FieldGetSuccessResponse struct {
+	Status  bool          `json:"status"`
+	Message string        `json:"message,omitempty"`
+	Data    FieldResponse `json:"data,omitempty"`
+}
+
+// FieldDeleteSuccessResponse is a success response for field deletion operations
+type FieldDeleteSuccessResponse struct {
+	Status  bool   `json:"status"`
+	Message string `json:"message,omitempty"`
+}
+
+// FormResponse is a Swagger-friendly representation of Form (without gorm.Model)
+type FormResponse struct {
+	ID          uint    `json:"id" example:"1"`
+	CreatedAt   string  `json:"created_at" example:"2024-01-01T00:00:00Z"`
+	UpdatedAt   string  `json:"updated_at" example:"2024-01-01T00:00:00Z"`
+	DeletedAt   *string `json:"deleted_at,omitempty"`
+	Title       string  `json:"title" example:"Contact Form"`
+	Description string  `json:"description" example:"A form to collect contact information"`
+	ServiceId   int     `json:"service_id" example:"1"`
+	Status      int     `json:"status" example:"1"`
+	Version     int     `json:"version" example:"1"`
+}
+
+// FormCreateSuccessResponse is a success response for form creation operations
+type FormCreateSuccessResponse struct {
+	Status  bool        `json:"status"`
+	Message string      `json:"message,omitempty"`
+	Data    FormRequest `json:"data,omitempty"`
+}
+
+// GroupResponse is a Swagger-friendly representation of Group (without gorm.Model)
+type GroupResponse struct {
+	ID        uint    `json:"id" example:"1"`
+	CreatedAt string  `json:"created_at" example:"2024-01-01T00:00:00Z"`
+	UpdatedAt string  `json:"updated_at" example:"2024-01-01T00:00:00Z"`
+	DeletedAt *string `json:"deleted_at,omitempty"`
+	GroupName string  `json:"group_name" example:"Personal Information"`
+}
+
+// GroupCreateSuccessResponse is a success response for group creation operations
+type GroupCreateSuccessResponse struct {
+	Status  bool         `json:"status"`
+	Message string       `json:"message,omitempty"`
+	Data    GroupRequest `json:"data,omitempty"`
+}
+
+// GroupGetSuccessResponse is a success response for group retrieval operations
+type GroupGetSuccessResponse struct {
+	Status  bool          `json:"status"`
+	Message string        `json:"message,omitempty"`
+	Data    GroupResponse `json:"data,omitempty"`
+}
+
+// GroupsListSuccessResponse is a success response for listing all groups
+type GroupsListSuccessResponse struct {
+	Status  bool            `json:"status"`
+	Message string          `json:"message,omitempty"`
+	Data    []GroupResponse `json:"data,omitempty"`
+}
+
+// GroupUpdateSuccessResponse is a success response for group update operations
+type GroupUpdateSuccessResponse struct {
+	Status  bool         `json:"status"`
+	Message string       `json:"message,omitempty"`
+	Data    GroupRequest `json:"data,omitempty"`
+}
+
+// GroupDeleteSuccessResponse is a success response for group deletion operations
+type GroupDeleteSuccessResponse struct {
+	Status  bool   `json:"status"`
+	Message string `json:"message,omitempty"`
+}
+
+// MultipleFormFieldsSuccessResponse is a success response for multiple form fields creation
+type MultipleFormFieldsSuccessResponse struct {
+	Status  bool               `json:"status"`
+	Message string             `json:"message,omitempty"`
+	Data    []FormFieldRequest `json:"data,omitempty"`
 }
 
 // CreateFieldHandler creates a new field
@@ -144,14 +286,14 @@ type FieldRequest struct {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      FieldRequest  true  "Field Request"
-// @Success      201      {object}  map[string]interface{}
-// @Failure      400      {object}  map[string]interface{}
-// @Failure      500      {object}  map[string]interface{}
+// @Success      201      {object}  FieldCreateSuccessResponse
+// @Failure      400      {object}  structs.ErrorResponse
+// @Failure      500      {object}  structs.ErrorResponse
 // @Router       /field [post]
 func CreateFieldHandler(c *gin.Context) {
 	var request FieldRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, helpers.NewError(err.Error(), http.StatusBadRequest))
 		return
 	}
 
@@ -162,14 +304,11 @@ func CreateFieldHandler(c *gin.Context) {
 	})
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
 		return
 	}
 
-	c.JSON(201, gin.H{
-		"message": "Field created successfully",
-		"data":    request,
-	})
+	c.JSON(http.StatusCreated, helpers.NewSuccess(request, "Field created successfully"))
 }
 
 // GetFieldHandler retrieves a field by ID
@@ -179,32 +318,54 @@ func CreateFieldHandler(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Field ID"
-// @Success      200  {object}  map[string]interface{}
-// @Failure      400  {object}  map[string]interface{}
-// @Failure      404  {object}  map[string]interface{}
+// @Success      200  {object}  FieldGetSuccessResponse
+// @Failure      400  {object}  structs.ErrorResponse
+// @Failure      404  {object}  structs.ErrorResponse
 // @Router       /field/{id} [get]
 func GetFieldHandler(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
-		c.JSON(400, gin.H{"error": "ID parameter is required"})
+		c.JSON(http.StatusBadRequest, helpers.NewError("ID parameter is required", http.StatusBadRequest))
 		return
 	}
 
 	var fieldID uint
 	if _, err := parseID(id, &fieldID); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid ID format"})
+		c.JSON(http.StatusBadRequest, helpers.NewError("Invalid ID format", http.StatusBadRequest))
 		return
 	}
 
 	field, err := models.GetFields(database.DB, fieldID)
 	if err != nil {
-		c.JSON(404, gin.H{"error": "Field not found"})
+		c.JSON(http.StatusNotFound, helpers.NewError("Field not found", http.StatusNotFound))
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"message": "Field retrieved successfully",
-		"data":    field,
+	// Convert model to response type
+	metaMap := make(map[string]interface{})
+	if len(field.Meta) > 0 {
+		if err := json.Unmarshal(field.Meta, &metaMap); err != nil {
+			metaMap = make(map[string]interface{})
+		}
+	}
+
+	fieldResponse := FieldResponse{
+		ID:        field.ID,
+		CreatedAt: field.CreatedAt.Format("2006-01-02T15:04:05Z"),
+		UpdatedAt: field.UpdatedAt.Format("2006-01-02T15:04:05Z"),
+		Label:     field.Label,
+		Type:      field.Type,
+		Meta:      metaMap,
+	}
+	if field.DeletedAt.Valid {
+		deletedAt := field.DeletedAt.Time.Format("2006-01-02T15:04:05Z")
+		fieldResponse.DeletedAt = &deletedAt
+	}
+
+	c.JSON(http.StatusOK, FieldGetSuccessResponse{
+		Status:  true,
+		Message: "Field retrieved successfully",
+		Data:    fieldResponse,
 	})
 }
 
@@ -216,26 +377,26 @@ func GetFieldHandler(c *gin.Context) {
 // @Produce      json
 // @Param        id       path      int           true  "Field ID"
 // @Param        request  body      FieldRequest  true  "Field Request"
-// @Success      200      {object}  map[string]interface{}
-// @Failure      400      {object}  map[string]interface{}
-// @Failure      500      {object}  map[string]interface{}
+// @Success      200      {object}  FieldUpdateSuccessResponse
+// @Failure      400      {object}  structs.ErrorResponse
+// @Failure      500      {object}  structs.ErrorResponse
 // @Router       /field/{id} [patch]
 func UpdateFieldHandler(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
-		c.JSON(400, gin.H{"error": "ID parameter is required"})
+		c.JSON(http.StatusBadRequest, helpers.NewError("ID parameter is required", http.StatusBadRequest))
 		return
 	}
 
 	var fieldID uint
 	if _, err := parseID(id, &fieldID); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid ID format"})
+		c.JSON(http.StatusBadRequest, helpers.NewError("Invalid ID format", http.StatusBadRequest))
 		return
 	}
 
 	var request FieldRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, helpers.NewError(err.Error(), http.StatusBadRequest))
 		return
 	}
 
@@ -247,14 +408,11 @@ func UpdateFieldHandler(c *gin.Context) {
 	})
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"message": "Field updated successfully",
-		"data":    request,
-	})
+	c.JSON(http.StatusOK, helpers.NewSuccess(request, "Field updated successfully"))
 }
 
 // DeleteFieldHandler deletes a field by ID
@@ -264,31 +422,32 @@ func UpdateFieldHandler(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Field ID"
-// @Success      200  {object}  map[string]interface{}
-// @Failure      400  {object}  map[string]interface{}
-// @Failure      500  {object}  map[string]interface{}
+// @Success      200  {object}  FieldDeleteSuccessResponse
+// @Failure      400  {object}  structs.ErrorResponse
+// @Failure      500  {object}  structs.ErrorResponse
 // @Router       /field/{id} [delete]
 func DeleteFieldHandler(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
-		c.JSON(400, gin.H{"error": "ID parameter is required"})
+		c.JSON(http.StatusBadRequest, helpers.NewError("ID parameter is required", http.StatusBadRequest))
 		return
 	}
 
 	var fieldID uint
 	if _, err := parseID(id, &fieldID); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid ID format"})
+		c.JSON(http.StatusBadRequest, helpers.NewError("Invalid ID format", http.StatusBadRequest))
 		return
 	}
 
 	err := models.DeleteFields(database.DB, fieldID)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"message": "Field deleted successfully",
+	c.JSON(http.StatusOK, FieldDeleteSuccessResponse{
+		Status:  true,
+		Message: "Field deleted successfully",
 	})
 }
 
@@ -314,14 +473,14 @@ type GroupRequest struct {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      GroupRequest  true  "Group Request"
-// @Success      201      {object}  map[string]interface{}
-// @Failure      400      {object}  map[string]interface{}
-// @Failure      500      {object}  map[string]interface{}
+// @Success      201      {object}  GroupCreateSuccessResponse
+// @Failure      400      {object}  structs.ErrorResponse
+// @Failure      500      {object}  structs.ErrorResponse
 // @Router       /groups [post]
 func CreateGroupHandler(c *gin.Context) {
 	var request GroupRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, helpers.NewError(err.Error(), http.StatusBadRequest))
 		return
 	}
 
@@ -330,14 +489,11 @@ func CreateGroupHandler(c *gin.Context) {
 	})
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
 		return
 	}
 
-	c.JSON(201, gin.H{
-		"message": "Group created successfully",
-		"data":    request,
-	})
+	c.JSON(http.StatusCreated, helpers.NewSuccess(request, "Group created successfully"))
 }
 
 // GetGroupByIDHandler retrieves a group by ID
@@ -347,32 +503,45 @@ func CreateGroupHandler(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Group ID"
-// @Success      200  {object}  map[string]interface{}
-// @Failure      400  {object}  map[string]interface{}
-// @Failure      404  {object}  map[string]interface{}
+// @Success      200  {object}  GroupGetSuccessResponse
+// @Failure      400  {object}  structs.ErrorResponse
+// @Failure      404  {object}  structs.ErrorResponse
 // @Router       /groups/{id} [get]
 func GetGroupByIDHandler(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
-		c.JSON(400, gin.H{"error": "ID parameter is required"})
+		c.JSON(http.StatusBadRequest, helpers.NewError("ID parameter is required", http.StatusBadRequest))
 		return
 	}
 
 	var groupID uint
 	if _, err := parseID(id, &groupID); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid ID format"})
+		c.JSON(http.StatusBadRequest, helpers.NewError("Invalid ID format", http.StatusBadRequest))
 		return
 	}
 
 	group, err := models.GetGroupByID(database.DB, groupID)
 	if err != nil {
-		c.JSON(404, gin.H{"error": "Group not found"})
+		c.JSON(http.StatusNotFound, helpers.NewError("Group not found", http.StatusNotFound))
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"message": "Group retrieved successfully",
-		"data":    group,
+	// Convert model to response type
+	groupResponse := GroupResponse{
+		ID:        group.ID,
+		CreatedAt: group.CreatedAt.Format("2006-01-02T15:04:05Z"),
+		UpdatedAt: group.UpdatedAt.Format("2006-01-02T15:04:05Z"),
+		GroupName: group.GroupName,
+	}
+	if group.DeletedAt.Valid {
+		deletedAt := group.DeletedAt.Time.Format("2006-01-02T15:04:05Z")
+		groupResponse.DeletedAt = &deletedAt
+	}
+
+	c.JSON(http.StatusOK, GroupGetSuccessResponse{
+		Status:  true,
+		Message: "Group retrieved successfully",
+		Data:    groupResponse,
 	})
 }
 
@@ -382,19 +551,36 @@ func GetGroupByIDHandler(c *gin.Context) {
 // @Tags         groups
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
-// @Failure      500  {object}  map[string]interface{}
+// @Success      200  {object}  GroupsListSuccessResponse
+// @Failure      500  {object}  structs.ErrorResponse
 // @Router       /groups [get]
 func GetAllGroupsHandler(c *gin.Context) {
 	groups, err := models.GetAllGroups(database.DB)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"message": "Groups retrieved successfully",
-		"data":    groups,
+	// Convert models to response types
+	groupsResponse := make([]GroupResponse, len(groups))
+	for i, group := range groups {
+		groupResp := GroupResponse{
+			ID:        group.ID,
+			CreatedAt: group.CreatedAt.Format("2006-01-02T15:04:05Z"),
+			UpdatedAt: group.UpdatedAt.Format("2006-01-02T15:04:05Z"),
+			GroupName: group.GroupName,
+		}
+		if group.DeletedAt.Valid {
+			deletedAt := group.DeletedAt.Time.Format("2006-01-02T15:04:05Z")
+			groupResp.DeletedAt = &deletedAt
+		}
+		groupsResponse[i] = groupResp
+	}
+
+	c.JSON(http.StatusOK, GroupsListSuccessResponse{
+		Status:  true,
+		Message: "Groups retrieved successfully",
+		Data:    groupsResponse,
 	})
 }
 
@@ -406,26 +592,26 @@ func GetAllGroupsHandler(c *gin.Context) {
 // @Produce      json
 // @Param        id       path      int           true  "Group ID"
 // @Param        request  body      GroupRequest  true  "Group Request"
-// @Success      200      {object}  map[string]interface{}
-// @Failure      400      {object}  map[string]interface{}
-// @Failure      500      {object}  map[string]interface{}
+// @Success      200      {object}  GroupUpdateSuccessResponse
+// @Failure      400      {object}  structs.ErrorResponse
+// @Failure      500      {object}  structs.ErrorResponse
 // @Router       /groups/{id} [patch]
 func UpdateGroupHandler(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
-		c.JSON(400, gin.H{"error": "ID parameter is required"})
+		c.JSON(http.StatusBadRequest, helpers.NewError("ID parameter is required", http.StatusBadRequest))
 		return
 	}
 
 	var groupID uint
 	if _, err := parseID(id, &groupID); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid ID format"})
+		c.JSON(http.StatusBadRequest, helpers.NewError("Invalid ID format", http.StatusBadRequest))
 		return
 	}
 
 	var request GroupRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, helpers.NewError(err.Error(), http.StatusBadRequest))
 		return
 	}
 
@@ -435,14 +621,11 @@ func UpdateGroupHandler(c *gin.Context) {
 	})
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"message": "Group updated successfully",
-		"data":    request,
-	})
+	c.JSON(http.StatusOK, helpers.NewSuccess(request, "Group updated successfully"))
 }
 
 // DeleteGroupHandler deletes a group by ID
@@ -452,30 +635,31 @@ func UpdateGroupHandler(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Group ID"
-// @Success      200  {object}  map[string]interface{}
-// @Failure      400  {object}  map[string]interface{}
-// @Failure      500  {object}  map[string]interface{}
+// @Success      200  {object}  GroupDeleteSuccessResponse
+// @Failure      400  {object}  structs.ErrorResponse
+// @Failure      500  {object}  structs.ErrorResponse
 // @Router       /groups/{id} [delete]
 func DeleteGroupHandler(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
-		c.JSON(400, gin.H{"error": "ID parameter is required"})
+		c.JSON(http.StatusBadRequest, helpers.NewError("ID parameter is required", http.StatusBadRequest))
 		return
 	}
 
 	var groupID uint
 	if _, err := parseID(id, &groupID); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid ID format"})
+		c.JSON(http.StatusBadRequest, helpers.NewError("Invalid ID format", http.StatusBadRequest))
 		return
 	}
 
 	err := models.DeleteGroup(database.DB, groupID)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"message": "Group deleted successfully",
+	c.JSON(http.StatusOK, GroupDeleteSuccessResponse{
+		Status:  true,
+		Message: "Group deleted successfully",
 	})
 }
