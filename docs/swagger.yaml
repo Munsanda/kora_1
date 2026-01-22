@@ -194,6 +194,51 @@ definitions:
       status:
         type: boolean
     type: object
+  handlers.ReservedNameCreateSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.ReservedNameResponse'
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.ReservedNameListSuccessResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handlers.ReservedNameResponse'
+        type: array
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.ReservedNameRequest:
+    properties:
+      name:
+        example: admin
+        type: string
+    required:
+    - name
+    type: object
+  handlers.ReservedNameResponse:
+    properties:
+      created_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      deleted_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: admin
+        type: string
+      updated_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+    type: object
   structs.ErrorResponse:
     properties:
       code:
@@ -603,6 +648,66 @@ paths:
       summary: Health check
       tags:
       - general
+  /reserved-name:
+    post:
+      consumes:
+      - application/json
+      description: Create a new reserved name with the provided name
+      parameters:
+      - description: Reserved Name Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ReservedNameRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.ReservedNameCreateSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Create a new reserved name
+      tags:
+      - reserved-name
+  /reserved-name/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve reserved names that match or are similar to the provided
+        name parameter
+      parameters:
+      - description: Name to search for
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ReservedNameListSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get reserved names by name
+      tags:
+      - reserved-name
 schemes:
 - http
 - https

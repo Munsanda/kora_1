@@ -27,6 +27,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.GET("/", s.HelloWorldHandler)
 
 	r.GET("/health", s.healthHandler)
+	reserved_name := r.Group("/reserved-name")
+	{
+		reserved_name.GET("/:name", handlers.GetReservedNameHandler)
+	}
 
 	services := r.Group("/services")
 	{
