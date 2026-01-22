@@ -253,6 +253,10 @@ func CreateMultipleFormFieldsHandler(c *gin.Context) {
 // Field Handlers
 
 type FieldRequest struct {
+	Label      string         `json:"label" binding:"required"`
+	Type       string         `json:"type" binding:"required"`
+	Meta       datatypes.JSON `json:"meta"`
+	IsRequired bool           `json:"is_required"`
 	Label string         `json:"label" binding:"required" example:"First Name"`
 	Type  string         `json:"type" binding:"required" example:"text"`
 	Meta  datatypes.JSON `json:"meta" swaggertype:"object"`
@@ -385,9 +389,10 @@ func CreateFieldHandler(c *gin.Context) {
 	}
 
 	err := models.CreateFields(database.DB, &models.Fields{
-		Label: request.Label,
-		Type:  request.Type,
-		Meta:  request.Meta,
+		Label:      request.Label,
+		Type:       request.Type,
+		Meta:       request.Meta,
+		IsRequired: request.IsRequired,
 	})
 
 	if err != nil {
