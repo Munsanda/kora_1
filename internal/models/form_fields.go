@@ -9,8 +9,12 @@ import (
 type FormFields struct {
 	gorm.Model
 
-	FormID      uint           `gorm:"index;not null"`
-	FieldsID    uint           `gorm:"not null;index"`
+    FormID  uint
+    Form    Form `gorm:"foreignKey:FormID"`
+
+    FieldID uint
+    Field   Field `gorm:"foreignKey:FieldID"`
+
 	Validations datatypes.JSON `gorm:"type:jsonb"`
 }
 

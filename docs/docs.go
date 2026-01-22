@@ -846,7 +846,25 @@ const docTemplate = `{
             }
         },
         "handlers.FieldRequest": {
-            "type": "object"
+            "type": "object",
+            "required": [
+                "label",
+                "type"
+            ],
+            "properties": {
+                "is_required": {
+                    "type": "boolean"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "meta": {
+                    "type": "object"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
         },
         "handlers.FieldResponse": {
             "type": "object",

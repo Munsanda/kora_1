@@ -26,6 +26,18 @@ definitions:
         type: boolean
     type: object
   handlers.FieldRequest:
+    properties:
+      is_required:
+        type: boolean
+      label:
+        type: string
+      meta:
+        type: object
+      type:
+        type: string
+    required:
+    - label
+    - type
     type: object
   handlers.FieldResponse:
     properties:

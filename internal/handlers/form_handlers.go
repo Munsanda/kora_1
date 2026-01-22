@@ -16,7 +16,7 @@ import (
 
 // FormFieldReference represents a field reference in a form creation request
 type FormFieldReference struct {
-	FieldsID    uint           `json:"fields_id" binding:"required"`
+	FieldID    uint           `json:"fields_id" binding:"required"`
 	Validations datatypes.JSON `json:"validations" swaggertype:"object"`
 }
 
@@ -66,7 +66,7 @@ func FormHandler(c *gin.Context) {
 		for _, field := range request.Fields {
 			models.CreateFormFields(database.DB, &models.FormFields{
 				FormID:      newForm.ID,
-				FieldsID:    field.FieldsID,
+				FieldID:    field.FieldID,
 				Validations: field.Validations,
 			})
 		}
@@ -171,7 +171,7 @@ type FormFieldResponse struct {
 	UpdatedAt   string                 `json:"updated_at" example:"2024-01-01T00:00:00Z"`
 	DeletedAt   *string                `json:"deleted_at,omitempty"`
 	FormID      uint                   `json:"form_id" example:"1"`
-	FieldsID    uint                   `json:"fields_id" example:"1"`
+	FieldID     uint                   `json:"field	_id" example:"1"`
 	Validations map[string]interface{} `json:"validations" swaggertype:"object"`
 }
 
@@ -180,6 +180,27 @@ type FormFieldSuccessResponse struct {
 	Status  bool              `json:"status"`
 	Message string            `json:"message,omitempty"`
 	Data    FormFieldResponse `json:"data,omitempty"`
+}
+// FormResponse is a Swagger-friendly representation of Form (without gorm.Model)
+type FormResponse struct {
+	ID          uint    `json:"id" example:"1"`
+	CreatedAt   string  `json:"created_at" example:"2024-01-01T00:00:00Z"`
+	UpdatedAt   string  `json:"updated_at" example:"2024-01-01T00:00:00Z"`
+	DeletedAt   *string `json:"deleted_at,omitempty"`
+	Title       string  `json:"title" example:"Contact Form"`
+	Description string  `json:"description" example:"A form to collect contact information"`
+	ServiceId   int     `json:"service_id" example:"1"`
+	Status      int     `json:"status" example:"1"`
+	Version     int     `json:"version" example:"1"`
+
+	Fields []FieldResponse `json:"fields"`
+}
+
+// FormCreateSuccessResponse is a success response for form creation operations
+type FormCreateSuccessResponse struct {
+	Status  bool        `json:"status"`
+	Message string      `json:"message,omitempty"`
+	Data    FormRequest `json:"data,omitempty"`
 }
 
 // CreateFormFieldsHandler creates a form field association
@@ -202,7 +223,7 @@ func CreateFormFieldsHandler(c *gin.Context) {
 
 	formField := &models.FormFields{
 		FormID:      request.FormID,
-		FieldsID:    request.FieldID,
+		FieldID:    request.FieldID,
 		Validations: request.Validations,
 	}
 	err := models.CreateFormFields(database.DB, formField)
@@ -225,7 +246,7 @@ func CreateFormFieldsHandler(c *gin.Context) {
 		UpdatedAt:   formField.UpdatedAt.Format("2006-01-02T15:04:05Z"),
 		DeletedAt:   nil,
 		FormID:      formField.FormID,
-		FieldsID:    formField.FieldsID,
+		FieldID:     formField.FieldID,
 		Validations: validationsMap,
 	}
 
@@ -254,7 +275,7 @@ func CreateMultipleFormFieldsHandler(c *gin.Context) {
 	for _, request := range requests {
 		formField := &models.FormFields{
 			FormID:      request.FormID,
-			FieldsID:    request.FieldID,
+			FieldID:    request.FieldID,
 			Validations: request.Validations,
 		}
 		if err := models.CreateFormFields(database.DB, formField); err != nil {
@@ -276,7 +297,7 @@ func CreateMultipleFormFieldsHandler(c *gin.Context) {
 			UpdatedAt:   formField.UpdatedAt.Format("2006-01-02T15:04:05Z"),
 			DeletedAt:   nil,
 			FormID:      formField.FormID,
-			FieldsID:    formField.FieldsID,
+			FieldID:     formField.FieldID,
 			Validations: validationsMap,
 		})
 	}
@@ -289,7 +310,7 @@ func CreateMultipleFormFieldsHandler(c *gin.Context) {
 type FieldRequest struct {
 	Label      string         `json:"label" binding:"required"`
 	Type       string         `json:"type" binding:"required"`
-	Meta       datatypes.JSON `json:"meta"`
+	Meta       datatypes.JSON `json:"meta" swaggertype:"object"`
 	IsRequired bool           `json:"is_required"`
 	// Label string         `json:"label" binding:"required" example:"First Name"`
 	// Type  string         `json:"type" binding:"required" example:"text"`
@@ -334,27 +355,7 @@ type FieldDeleteSuccessResponse struct {
 	Message string `json:"message,omitempty"`
 }
 
-// FormResponse is a Swagger-friendly representation of Form (without gorm.Model)
-type FormResponse struct {
-	ID          uint    `json:"id" example:"1"`
-	CreatedAt   string  `json:"created_at" example:"2024-01-01T00:00:00Z"`
-	UpdatedAt   string  `json:"updated_at" example:"2024-01-01T00:00:00Z"`
-	DeletedAt   *string `json:"deleted_at,omitempty"`
-	Title       string  `json:"title" example:"Contact Form"`
-	Description string  `json:"description" example:"A form to collect contact information"`
-	ServiceId   int     `json:"service_id" example:"1"`
-	Status      int     `json:"status" example:"1"`
-	Version     int     `json:"version" example:"1"`
 
-	Fields []FieldResponse `gorm:"many2many:form_fields;"`
-}
-
-// FormCreateSuccessResponse is a success response for form creation operations
-type FormCreateSuccessResponse struct {
-	Status  bool        `json:"status"`
-	Message string      `json:"message,omitempty"`
-	Data    FormRequest `json:"data,omitempty"`
-}
 
 // GroupResponse is a Swagger-friendly representation of Group (without gorm.Model)
 type GroupResponse struct {
