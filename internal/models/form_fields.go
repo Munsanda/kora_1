@@ -9,18 +9,12 @@ import (
 type FormFields struct {
 	gorm.Model
 
-	FormID     uuid.UUID `gorm:"index;not null"`
-	FieldsID uuid.UUID `gorm:"index;not null"`
-
-	Position   int
-	IsRequired bool
-
+	FormID      uint           `gorm:"index;not null"`
+	FieldsID    uint           `gorm:"not null;index"`
 	Validations datatypes.JSON `gorm:"type:jsonb"`
-
-	Fields Fields `gorm:"foreignKey:FieldsID"`
 }
 
-func CreateFormFields(db *gorm.DB, Fields FormFields) error {
+func CreateFormFields(db *gorm.DB, Fields *FormFields) error {
 	return db.Create(&Fields).Error
 }
 
