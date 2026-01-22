@@ -21,14 +21,14 @@ type FormRequest struct {
 	ServiceID   int                 `json:"service_id" binding:"required"`
 }
 
-// FormHandler creates a new form
-// @Summary      Create a new form
-// @Description  Create a new form with title, description, fields, and service ID
-// @Tags         forms
+// CreateReservedNameHandler creates a new reserved name
+// @Summary      Create a new reserved name
+// @Description  Create a new reserved name with the provided name
+// @Tags         reserved-name
 // @Accept       json
 // @Produce      json
-// @Param        request  body      FormRequest  true  "Form Request"
-// @Success      200      {object}  FormCreateSuccessResponse
+// @Param        request  body      ReservedNameRequest  true  "Reserved Name Request"
+// @Success      201      {object}  ReservedNameCreateSuccessResponse
 // @Failure      400      {object}  structs.ErrorResponse
 // @Failure      500      {object}  structs.ErrorResponse
 // @Router       /form [post]
@@ -62,7 +62,7 @@ func FormHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, helpers.NewSuccess(request, "Form created successfully"))
 }
 
-//patch form handler here...
+// patch form handler here...
 // UpdateFormStatusHandler updates a form's status by ID
 // @Summary      Update form status
 // @Description  Update the status of an existing form by its ID
@@ -110,7 +110,6 @@ func UpdateFormStatusHandler(c *gin.Context) {
 type UpdateFormStatusRequest struct {
 	Status string `json:"status" binding:"required"`
 }
-
 
 type FormFieldRequest struct {
 	FormID      uint           `json:"form_id" binding:"required"`
@@ -212,7 +211,6 @@ func CreateMultipleFormFieldsHandler(c *gin.Context) {
 
 	c.JSON(http.StatusAccepted, helpers.NewSuccess(requests, "Form fields created successfully"))
 }
-
 
 // Field Handlers
 

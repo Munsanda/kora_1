@@ -70,15 +70,6 @@ definitions:
       status:
         type: boolean
     type: object
-  handlers.FormCreateSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.FormRequest'
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
   handlers.FormFieldRequest:
     type: object
   handlers.FormFieldResponse:
@@ -111,8 +102,6 @@ definitions:
         type: string
       status:
         type: boolean
-    type: object
-  handlers.FormRequest:
     type: object
   handlers.GroupCreateSuccessResponse:
     properties:
@@ -238,6 +227,13 @@ definitions:
       updated_at:
         example: "2024-01-01T00:00:00Z"
         type: string
+    type: object
+  handlers.UpdateFormStatusRequest:
+    properties:
+      status:
+        type: string
+    required:
+    - status
     type: object
   structs.ErrorResponse:
     properties:
@@ -404,22 +400,21 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new form with title, description, fields, and service
-        ID
+      description: Create a new reserved name with the provided name
       parameters:
-      - description: Form Request
+      - description: Reserved Name Request
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.FormRequest'
+          $ref: '#/definitions/handlers.ReservedNameRequest'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            $ref: '#/definitions/handlers.FormCreateSuccessResponse'
+            $ref: '#/definitions/handlers.ReservedNameCreateSuccessResponse'
         "400":
           description: Bad Request
           schema:
@@ -428,7 +423,45 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/structs.ErrorResponse'
-      summary: Create a new form
+      summary: Create a new reserved name
+      tags:
+      - reserved-name
+  /form/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Update the status of an existing form by its ID
+      parameters:
+      - description: Form ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Form Status Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateFormStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update form status
       tags:
       - forms
   /form_fields:

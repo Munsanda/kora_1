@@ -11,24 +11,24 @@ import (
 
 // ReservedNameResponse is a Swagger-friendly representation of ReservedName
 type ReservedNameResponse struct {
-	ID        uint   `json:"id" example:"1"`
-	CreatedAt string `json:"created_at" example:"2024-01-01T00:00:00Z"`
-	UpdatedAt string `json:"updated_at" example:"2024-01-01T00:00:00Z"`
+	ID        uint    `json:"id" example:"1"`
+	CreatedAt string  `json:"created_at" example:"2024-01-01T00:00:00Z"`
+	UpdatedAt string  `json:"updated_at" example:"2024-01-01T00:00:00Z"`
 	DeletedAt *string `json:"deleted_at,omitempty"`
-	Name      string `json:"name" example:"admin"`
+	Name      string  `json:"name" example:"admin"`
 }
 
 // ReservedNameListSuccessResponse is a success response containing a list of reserved names
 type ReservedNameListSuccessResponse struct {
-	Status  bool                  `json:"status"`
-	Message string                `json:"message,omitempty"`
+	Status  bool                   `json:"status"`
+	Message string                 `json:"message,omitempty"`
 	Data    []ReservedNameResponse `json:"data,omitempty"`
 }
 
 // ReservedNameCreateSuccessResponse is a success response containing a reserved name
 type ReservedNameCreateSuccessResponse struct {
-	Status  bool                `json:"status"`
-	Message string              `json:"message,omitempty"`
+	Status  bool                 `json:"status"`
+	Message string               `json:"message,omitempty"`
 	Data    ReservedNameResponse `json:"data,omitempty"`
 }
 

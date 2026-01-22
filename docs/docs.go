@@ -235,7 +235,7 @@ const docTemplate = `{
         },
         "/form": {
             "post": {
-                "description": "Create a new form with title, description, fields, and service ID",
+                "description": "Create a new reserved name with the provided name",
                 "consumes": [
                     "application/json"
                 ],
@@ -243,25 +243,25 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "forms"
+                    "reserved-name"
                 ],
-                "summary": "Create a new form",
+                "summary": "Create a new reserved name",
                 "parameters": [
                     {
-                        "description": "Form Request",
+                        "description": "Reserved Name Request",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.FormRequest"
+                            "$ref": "#/definitions/handlers.ReservedNameRequest"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.FormCreateSuccessResponse"
+                            "$ref": "#/definitions/handlers.ReservedNameCreateSuccessResponse"
                         }
                     },
                     "400": {
@@ -274,6 +274,62 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/form/{id}/status": {
+            "patch": {
+                "description": "Update the status of an existing form by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "forms"
+                ],
+                "summary": "Update form status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Form ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Form Status Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.UpdateFormStatusRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -804,20 +860,6 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.FormCreateSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.FormRequest"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
         "handlers.FormFieldRequest": {
             "type": "object"
         },
@@ -865,9 +907,6 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
-        },
-        "handlers.FormRequest": {
-            "type": "object"
         },
         "handlers.GroupCreateSuccessResponse": {
             "type": "object",
@@ -1055,6 +1094,17 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string",
                     "example": "2024-01-01T00:00:00Z"
+                }
+            }
+        },
+        "handlers.UpdateFormStatusRequest": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string"
                 }
             }
         },
