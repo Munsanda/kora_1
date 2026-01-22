@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+main
+*.test
+*.out
+tmp/
+
+# Environment files (will be passed via env_file in docker-compose)
+.env
+
+# Air config
+.air.toml
+
+# Makefile
+Makefile

@@ -28,6 +28,15 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.GET("/health", s.healthHandler)
 
+	services := r.Group("/services")
+	{
+		services.GET("/:id")
+		services.GET("/")
+		services.POST("/")
+		services.PATCH("/:id")
+		services.DELETE("/:id")
+	}
+
 	fields := r.Group("/field")
 	{
 		fields.GET("/:id", handlers.GetFieldHandler)
