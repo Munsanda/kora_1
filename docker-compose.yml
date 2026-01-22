@@ -1,15 +1,33 @@
-services:
-  psql_bp:
-    image: postgres:latest
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${BLUEPRINT_DB_DATABASE}
-      POSTGRES_USER: ${BLUEPRINT_DB_USERNAME}
-      POSTGRES_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
-    ports:
-      - "${BLUEPRINT_DB_PORT}:5432"
-    volumes:
-      - psql_volume_bp:/var/lib/postgresql/data
+# Postgres is running as a separate external container
+# To connect both containers:
+# 1. Connect your PostgreSQL container to the same network:
+#    docker network connect kora_network <postgres_container_name>
+# 2. Set BLUEPRINT_DB_HOST in .env to your PostgreSQL container name
+# 3. Or use host.docker.internal if PostgreSQL is on the host machine
 
-volumes:
-  psql_volume_bp:
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kora_api
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:8080"
+    environment:
+      - PORT=${PORT:-8080}
+      - BLUEPRINT_DB_HOST=${BLUEPRINT_DB_HOST}
+      - BLUEPRINT_DB_PORT=${BLUEPRINT_DB_PORT:-5432}
+      - BLUEPRINT_DB_DATABASE=${BLUEPRINT_DB_DATABASE}
+      - BLUEPRINT_DB_USERNAME=${BLUEPRINT_DB_USERNAME}
+      - BLUEPRINT_DB_PASSWORD=${BLUEPRINT_DB_PASSWORD}
+      - BLUEPRINT_DB_SCHEMA=${BLUEPRINT_DB_SCHEMA:-public}
+    env_file:
+      - .env
+    networks:
+      - kora_network
+
+networks:
+  kora_network:
+    name: kora_network
+    driver: bridge

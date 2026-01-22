@@ -1,10 +1,183 @@
 basePath: /
 definitions:
+  handlers.FieldCreateSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.FieldRequest'
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.FieldDeleteSuccessResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.FieldGetSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.FieldResponse'
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
   handlers.FieldRequest:
+    properties:
+      label:
+        example: First Name
+        type: string
+      meta:
+        type: object
+      type:
+        example: text
+        type: string
+    required:
+    - label
+    - type
+    type: object
+  handlers.FieldResponse:
+    properties:
+      created_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      deleted_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      label:
+        example: First Name
+        type: string
+      meta:
+        type: object
+      type:
+        example: text
+        type: string
+      updated_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+    type: object
+  handlers.FieldUpdateSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.FieldRequest'
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.FormCreateResponse:
+    properties:
+      description:
+        example: A form to collect contact information
+        type: string
+      id:
+        example: 1
+        type: integer
+      service_id:
+        example: 1
+        type: integer
+      title:
+        example: Contact Form
+        type: string
+    type: object
+  handlers.FormFieldReference:
+    properties:
+      fields_id:
+        type: integer
+      validations:
+        type: object
+    required:
+    - fields_id
     type: object
   handlers.FormFieldRequest:
+    properties:
+      fields_id:
+        type: integer
+      form_id:
+        type: integer
+      validations:
+        type: object
+    required:
+    - fields_id
+    - form_id
+    - validations
+    type: object
+  handlers.FormFieldResponse:
+    properties:
+      created_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      deleted_at:
+        type: string
+      fields_id:
+        example: 1
+        type: integer
+      form_id:
+        example: 1
+        type: integer
+      id:
+        example: 1
+        type: integer
+      updated_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      validations:
+        type: object
+    type: object
+  handlers.FormFieldSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.FormFieldResponse'
+      message:
+        type: string
+      status:
+        type: boolean
     type: object
   handlers.FormRequest:
+    properties:
+      description:
+        type: string
+      fields:
+        items:
+          $ref: '#/definitions/handlers.FormFieldReference'
+        type: array
+      service_id:
+        type: integer
+      title:
+        type: string
+    required:
+    - service_id
+    - title
+    type: object
+  handlers.GroupCreateSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.GroupRequest'
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.GroupDeleteSuccessResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.GroupGetSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.GroupResponse'
+      message:
+        type: string
+      status:
+        type: boolean
     type: object
   handlers.GroupRequest:
     properties:
@@ -12,6 +185,115 @@ definitions:
         type: string
     required:
     - group_name
+    type: object
+  handlers.GroupResponse:
+    properties:
+      created_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      deleted_at:
+        type: string
+      group_name:
+        example: Personal Information
+        type: string
+      id:
+        example: 1
+        type: integer
+      updated_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+    type: object
+  handlers.GroupUpdateSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.GroupRequest'
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.GroupsListSuccessResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handlers.GroupResponse'
+        type: array
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.MultipleFormFieldsSuccessResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handlers.FormFieldResponse'
+        type: array
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.ReservedNameCreateSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.ReservedNameResponse'
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.ReservedNameListSuccessResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handlers.ReservedNameResponse'
+        type: array
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.ReservedNameRequest:
+    properties:
+      name:
+        example: admin
+        type: string
+    required:
+    - name
+    type: object
+  handlers.ReservedNameResponse:
+    properties:
+      created_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      deleted_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: admin
+        type: string
+      updated_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+    type: object
+  handlers.UpdateFormStatusRequest:
+    properties:
+      status:
+        type: string
+    required:
+    - status
+    type: object
+  structs.ErrorResponse:
+    properties:
+      code:
+        type: integer
+      error:
+        type: string
+      status:
+        type: boolean
     type: object
 host: localhost:8080
 info:
@@ -62,18 +344,15 @@ paths:
         "201":
           description: Created
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/handlers.FieldCreateSuccessResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
       summary: Create a new field
       tags:
       - fields
@@ -94,18 +373,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/handlers.FieldDeleteSuccessResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
       summary: Delete field
       tags:
       - fields
@@ -125,18 +401,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/handlers.FieldGetSuccessResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
       summary: Get field by ID
       tags:
       - fields
@@ -162,18 +435,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/handlers.FieldUpdateSuccessResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
       summary: Update field
       tags:
       - fields
@@ -181,8 +451,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new form with title, description, fields, and service
-        ID
+      description: Create a new form name with the provided fields
       parameters:
       - description: Form Request
         in: body
@@ -190,6 +459,41 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/handlers.FormRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.FormCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Create a new form name
+      tags:
+      - form
+  /form/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Update the status of an existing form by its ID
+      parameters:
+      - description: Form ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Form Status Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateFormStatusRequest'
       produces:
       - application/json
       responses:
@@ -208,7 +512,7 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      summary: Create a new form
+      summary: Update form status
       tags:
       - forms
   /form_fields:
@@ -229,13 +533,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/handlers.FormFieldSuccessResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
       summary: Create form field
       tags:
       - form-fields
@@ -259,13 +565,15 @@ paths:
         "202":
           description: Accepted
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/handlers.MultipleFormFieldsSuccessResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
       summary: Create multiple form fields
       tags:
       - form-fields
@@ -280,13 +588,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/handlers.GroupsListSuccessResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
       summary: Get all groups
       tags:
       - groups
@@ -307,18 +613,15 @@ paths:
         "201":
           description: Created
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/handlers.GroupCreateSuccessResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
       summary: Create a new group
       tags:
       - groups
@@ -339,18 +642,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/handlers.GroupDeleteSuccessResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
       summary: Delete group
       tags:
       - groups
@@ -370,18 +670,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/handlers.GroupGetSuccessResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
       summary: Get group by ID
       tags:
       - groups
@@ -407,18 +704,15 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/handlers.GroupUpdateSuccessResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
       summary: Update group
       tags:
       - groups
@@ -438,6 +732,66 @@ paths:
       summary: Health check
       tags:
       - general
+  /reserved-name:
+    post:
+      consumes:
+      - application/json
+      description: Create a new reserved name with the provided name
+      parameters:
+      - description: Reserved Name Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ReservedNameRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.ReservedNameCreateSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Create a new reserved name
+      tags:
+      - reserved-name
+  /reserved-name/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve reserved names that match or are similar to the provided
+        name parameter
+      parameters:
+      - description: Name to search for
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ReservedNameListSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get reserved names by name
+      tags:
+      - reserved-name
 schemes:
 - http
 - https

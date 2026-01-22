@@ -1,6 +1,7 @@
 package structs
 
 // Standard envelope for all JSON responses
+// @x-extension-openapi-ignore
 type SuccessResponse[T any] struct {
 	Status  bool   `json:"status"`
 	Message string `json:"message,omitempty"`
