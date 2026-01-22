@@ -27,19 +27,20 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.GET("/", s.HelloWorldHandler)
 
 	r.GET("/health", s.healthHandler)
+	
 	reserved_name := r.Group("/reserved-name")
 	{
 		reserved_name.GET("/:name", handlers.GetReservedNameHandler)
 	}
 
-	services := r.Group("/services")
-	{
-		services.GET("/:id")
-		services.GET("/")
-		services.POST("/")
-		services.PATCH("/:id")
-		services.DELETE("/:id")
-	}
+	// services := r.Group("/services")
+	// {
+	// 	services.GET("/:id")
+	// 	services.GET("/")
+	// 	services.POST("/")
+	// 	services.PATCH("/:id")
+	// 	services.DELETE("/:id")
+	// }
 
 	r.POST("/form", handlers.FormHandler)
 
@@ -74,6 +75,13 @@ func (s *Server) RegisterRoutes() http.Handler {
 		answers.GET("/:id")
 		answers.POST("/")
 	}
+
+	services := r.Group("/services")
+	{
+		services.GET("/:id", handlers.GetserviceHandler)
+		services.GET("/", handlers.ListServicesHandler)
+	}
+
 	r.POST("submission")
 
 	return r

@@ -120,6 +120,32 @@ func UpdateFormStatusHandler(c *gin.Context) {
 	})
 }
 
+func GetFormWithFieldsHandler(c *gin.Context) {
+	id := c.Param("id")
+
+	if id == "" {
+		c.JSON(400, gin.H{"error": "ID parameter is required"})
+		return
+	}
+
+	var formID uint
+	if _, err := parseID(id, &formID); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid ID format"})
+		return
+	}
+
+	form, err := models.GetForm(database.DB, formID)
+	if err != nil {
+		c.JSON(404, gin.H{"error": "Form not found"})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Form retrieved successfully",
+		"data":    form,
+	})
+}
+
 type UpdateFormStatusRequest struct {
 	Status string `json:"status" binding:"required"`
 }
@@ -253,9 +279,13 @@ func CreateMultipleFormFieldsHandler(c *gin.Context) {
 // Field Handlers
 
 type FieldRequest struct {
-	Label string         `json:"label" binding:"required" example:"First Name"`
-	Type  string         `json:"type" binding:"required" example:"text"`
-	Meta  datatypes.JSON `json:"meta" swaggertype:"object"`
+	Label      string         `json:"label" binding:"required"`
+	Type       string         `json:"type" binding:"required"`
+	Meta       datatypes.JSON `json:"meta"`
+	IsRequired bool           `json:"is_required"`
+	// Label string         `json:"label" binding:"required" example:"First Name"`
+	// Type  string         `json:"type" binding:"required" example:"text"`
+	// Meta  datatypes.JSON `json:"meta" swaggertype:"object"`
 }
 
 // FieldCreateSuccessResponse is a success response for field creation operations
@@ -384,7 +414,7 @@ func CreateFieldHandler(c *gin.Context) {
 		return
 	}
 
-	err := models.CreateFields(database.DB, &models.Fields{
+	err := models.CreateFields(database.DB, &models.Field{
 		Label: request.Label,
 		Type:  request.Type,
 		Meta:  request.Meta,
@@ -487,7 +517,7 @@ func UpdateFieldHandler(c *gin.Context) {
 		return
 	}
 
-	err := models.UpdateFields(database.DB, &models.Fields{
+	err := models.UpdateFields(database.DB, &models.Field{
 		Model: gorm.Model{ID: fieldID},
 		Label: request.Label,
 		Type:  request.Type,

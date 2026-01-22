@@ -10,7 +10,7 @@ type Submission struct {
 	FormID      uuid.UUID `gorm:"index"`
 	FormVersion int
 
-	CreatedBy string `gorm:"size:100"`
+	CreatedByUserId uint `gorm:"index"` 
 	Status    string `gorm:"size:30;default:'submitted'"`
 
 	Answers []FormAnswer `gorm:"constraint:OnDelete:CASCADE"`

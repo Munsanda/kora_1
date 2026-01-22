@@ -12,7 +12,7 @@ func Migrate(db *gorm.DB) {
 
 	err := db.AutoMigrate(
 		&models.Form{},
-		&models.Fields{},
+		&models.Field{},
 		&models.FormFields{},
 		&models.Submission{},
 		&models.FormAnswer{},
