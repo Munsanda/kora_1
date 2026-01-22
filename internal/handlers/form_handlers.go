@@ -79,7 +79,7 @@ func FormHandler(c *gin.Context) {
 // UpdateFormStatusHandler updates a form's status by ID
 // @Summary      Update form status
 // @Description  Update the status of an existing form by its ID
-// @Tags         forms
+// @Tags         form
 // @Accept       json
 // @Produce      json
 // @Param        id       path      int                    true  "Form ID"
