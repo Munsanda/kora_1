@@ -4,9 +4,10 @@ import "gorm.io/gorm"
 
 type Group struct {
 	gorm.Model
-	GroupName string   `gorm:"size:100;not null;unique"`
-	Fields  [] Fields `gorm:"constraint:OnDelete:CASCADE"`
+	GroupName string  `gorm:"size:100;not null;unique"`
+	Fields    []Field `gorm:"constraint:OnDelete:CASCADE"`
 }
+
 func CreateGroup(db *gorm.DB, group *Group) error {
 	return db.Create(group).Error
 }

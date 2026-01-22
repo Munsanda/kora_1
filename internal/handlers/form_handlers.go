@@ -107,6 +107,32 @@ func UpdateFormStatusHandler(c *gin.Context) {
 	})
 }
 
+func GetFormWithFieldsHandler(c *gin.Context) {
+	id := c.Param("id")
+
+	if id == "" {
+		c.JSON(400, gin.H{"error": "ID parameter is required"})
+		return
+	}
+
+	var formID uint
+	if _, err := parseID(id, &formID); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid ID format"})
+		return
+	}
+
+	form, err := models.GetForm(database.DB, formID)
+	if err != nil {
+		c.JSON(404, gin.H{"error": "Form not found"})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Form retrieved successfully",
+		"data":    form,
+	})
+}
+
 type UpdateFormStatusRequest struct {
 	Status string `json:"status" binding:"required"`
 }
@@ -346,7 +372,7 @@ func CreateFieldHandler(c *gin.Context) {
 		return
 	}
 
-	err := models.CreateFields(database.DB, &models.Fields{
+	err := models.CreateFields(database.DB, &models.Field{
 		Label: request.Label,
 		Type:  request.Type,
 		Meta:  request.Meta,
@@ -449,7 +475,7 @@ func UpdateFieldHandler(c *gin.Context) {
 		return
 	}
 
-	err := models.UpdateFields(database.DB, &models.Fields{
+	err := models.UpdateFields(database.DB, &models.Field{
 		Model: gorm.Model{ID: fieldID},
 		Label: request.Label,
 		Type:  request.Type,

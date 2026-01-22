@@ -10,7 +10,7 @@ type Form struct {
 	Status      int    `gorm:"default:0"`
 	Version     int    `gorm:"default:1"`
 
-	Fieldss []FormFields `gorm:"constraint:OnDelete:CASCADE"`
+	Fields []Field `gorm:"many2many:form_fields;"`
 }
 
 func CreateForm(db *gorm.DB, form *Form) (*Form, error) {
@@ -20,9 +20,17 @@ func CreateForm(db *gorm.DB, form *Form) (*Form, error) {
 
 func GetForm(db *gorm.DB, id uint) (*Form, error) {
 	var form Form
-	if err := db.First(&form, id).Error; err != nil {
+
+	err := db.
+		Preload("FormFields").
+		Preload("FormFields.Field").
+		First(&form, id).
+		Error
+
+	if err != nil {
 		return nil, err
 	}
+
 	return &form, nil
 }
 
