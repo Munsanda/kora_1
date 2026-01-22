@@ -26,18 +26,6 @@ definitions:
         type: boolean
     type: object
   handlers.FieldRequest:
-    properties:
-      label:
-        example: First Name
-        type: string
-      meta:
-        type: object
-      type:
-        example: text
-        type: string
-    required:
-    - label
-    - type
     type: object
   handlers.FieldResponse:
     properties:
@@ -153,6 +141,39 @@ definitions:
     required:
     - service_id
     - title
+    type: object
+  handlers.FormResponse:
+    properties:
+      created_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      deleted_at:
+        type: string
+      description:
+        example: A form to collect contact information
+        type: string
+      fields:
+        items:
+          $ref: '#/definitions/handlers.FieldResponse'
+        type: array
+      id:
+        example: 1
+        type: integer
+      service_id:
+        example: 1
+        type: integer
+      status:
+        example: 1
+        type: integer
+      title:
+        example: Contact Form
+        type: string
+      updated_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      version:
+        example: 1
+        type: integer
     type: object
   handlers.GroupCreateSuccessResponse:
     properties:
@@ -514,7 +535,7 @@ paths:
             type: object
       summary: Update form status
       tags:
-      - forms
+      - form
   /form_fields:
     post:
       consumes:
@@ -577,6 +598,39 @@ paths:
       summary: Create multiple form fields
       tags:
       - form-fields
+  /forms/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a form by ID, including all form fields
+      parameters:
+      - description: Form ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.FormResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a form with all fields
+      tags:
+      - form
   /groups:
     get:
       consumes:

@@ -120,6 +120,17 @@ func UpdateFormStatusHandler(c *gin.Context) {
 	})
 }
 
+// GetFormWithFieldsHandler godoc
+// @Summary Get a form with all fields
+// @Description Retrieve a form by ID, including all form fields
+// @Tags form
+// @Accept json
+// @Produce json
+// @Param id path int true "Form ID"
+// @Success 200 {object} FormResponse
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /forms/{id} [get]
 func GetFormWithFieldsHandler(c *gin.Context) {
 	id := c.Param("id")
 
@@ -337,6 +348,8 @@ type FormResponse struct {
 	ServiceId   int     `json:"service_id" example:"1"`
 	Status      int     `json:"status" example:"1"`
 	Version     int     `json:"version" example:"1"`
+
+	Fields []FieldResponse `gorm:"many2many:form_fields;"`
 }
 
 // FormCreateSuccessResponse is a success response for form creation operations
