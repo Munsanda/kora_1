@@ -9,8 +9,26 @@ import (
 	"syscall"
 	"time"
 
+	_ "kora_1/docs" // Swagger docs
 	"kora_1/internal/server"
 )
+
+// @title           Kora API
+// @version         1.0
+// @description     This is the Kora API server for form management.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /
+
+// @schemes   http https
 
 func gracefulShutdown(apiServer *http.Server, done chan bool) {
 	// Create context that listens for the interrupt signal from the OS.

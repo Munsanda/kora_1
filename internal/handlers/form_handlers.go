@@ -3,7 +3,9 @@ package handlers
 import (
 	"fmt"
 	"kora_1/internal/database"
+	"kora_1/internal/helpers"
 	"kora_1/internal/models"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +20,17 @@ type FormRequest struct {
 	ServiceID   int                 `json:"service_id" binding:"required"`
 }
 
-// Create form handler
+// FormHandler creates a new form
+// @Summary      Create a new form
+// @Description  Create a new form with title, description, fields, and service ID
+// @Tags         forms
+// @Accept       json
+// @Produce      json
+// @Param        request  body      FormRequest  true  "Form Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /form [post]
 func FormHandler(c *gin.Context) {
 	var request FormRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -53,14 +65,22 @@ func FormHandler(c *gin.Context) {
 	}
 }
 
-
-
 type FormFieldRequest struct {
 	FormID      uint           `json:"form_id" binding:"required"`
 	FieldsID    uint           `json:"fields_id" binding:"required"`
 	Validations datatypes.JSON `json:"validations" binding:"required"`
 }
 
+// CreateFormFieldsHandler creates a form field association
+// @Summary      Create form field
+// @Description  Create an association between a form and a field with validations
+// @Tags         form-fields
+// @Accept       json
+// @Produce      json
+// @Param        request  body      FormFieldRequest  true  "Form Field Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Router       /form_fields [post]
 func CreateFormFieldsHandler(c *gin.Context) {
 	var request FormFieldRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -80,11 +100,20 @@ func CreateFormFieldsHandler(c *gin.Context) {
 	})
 }
 
-//create an array of form fields
+// CreateMultipleFormFieldsHandler creates multiple form field associations
+// @Summary      Create multiple form fields
+// @Description  Create multiple associations between a form and fields with validations
+// @Tags         form-fields
+// @Accept       json
+// @Produce      json
+// @Param        request  body      []FormFieldRequest  true  "Form Field Requests"
+// @Success      202      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Router       /form_fields/multiple [post]
 func CreateMultipleFormFieldsHandler(c *gin.Context) {
 	var requests []FormFieldRequest
 	if err := c.ShouldBindJSON(&requests); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, helpers.NewError(err.Error(), http.StatusBadRequest))
 		return
 	}
 
@@ -96,10 +125,7 @@ func CreateMultipleFormFieldsHandler(c *gin.Context) {
 		})
 	}
 
-	c.JSON(200, gin.H{
-		"message": "Multiple form fields created successfully",
-		"data":    requests,
-	})
+	c.JSON(http.StatusAccepted, helpers.NewSuccess(requests, "Form fields created successfully"))
 }
 
 // Field Handlers
@@ -110,6 +136,17 @@ type FieldRequest struct {
 	Meta  datatypes.JSON `json:"meta"`
 }
 
+// CreateFieldHandler creates a new field
+// @Summary      Create a new field
+// @Description  Create a new field with label, type, and metadata
+// @Tags         fields
+// @Accept       json
+// @Produce      json
+// @Param        request  body      FieldRequest  true  "Field Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /field [post]
 func CreateFieldHandler(c *gin.Context) {
 	var request FieldRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -134,6 +171,17 @@ func CreateFieldHandler(c *gin.Context) {
 	})
 }
 
+// GetFieldHandler retrieves a field by ID
+// @Summary      Get field by ID
+// @Description  Retrieve a field by its ID
+// @Tags         fields
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Field ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Router       /field/{id} [get]
 func GetFieldHandler(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
@@ -159,6 +207,18 @@ func GetFieldHandler(c *gin.Context) {
 	})
 }
 
+// UpdateFieldHandler updates a field by ID
+// @Summary      Update field
+// @Description  Update an existing field by its ID
+// @Tags         fields
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int           true  "Field ID"
+// @Param        request  body      FieldRequest  true  "Field Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /field/{id} [patch]
 func UpdateFieldHandler(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
@@ -196,6 +256,17 @@ func UpdateFieldHandler(c *gin.Context) {
 	})
 }
 
+// DeleteFieldHandler deletes a field by ID
+// @Summary      Delete field
+// @Description  Delete a field by its ID
+// @Tags         fields
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Field ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /field/{id} [delete]
 func DeleteFieldHandler(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
@@ -235,6 +306,17 @@ type GroupRequest struct {
 	GroupName string `json:"group_name" binding:"required"`
 }
 
+// CreateGroupHandler creates a new group
+// @Summary      Create a new group
+// @Description  Create a new group with a group name
+// @Tags         groups
+// @Accept       json
+// @Produce      json
+// @Param        request  body      GroupRequest  true  "Group Request"
+// @Success      201      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /groups [post]
 func CreateGroupHandler(c *gin.Context) {
 	var request GroupRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -257,6 +339,17 @@ func CreateGroupHandler(c *gin.Context) {
 	})
 }
 
+// GetGroupByIDHandler retrieves a group by ID
+// @Summary      Get group by ID
+// @Description  Retrieve a group by its ID
+// @Tags         groups
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Group ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Router       /groups/{id} [get]
 func GetGroupByIDHandler(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
@@ -282,6 +375,15 @@ func GetGroupByIDHandler(c *gin.Context) {
 	})
 }
 
+// GetAllGroupsHandler retrieves all groups
+// @Summary      Get all groups
+// @Description  Retrieve all groups
+// @Tags         groups
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /groups [get]
 func GetAllGroupsHandler(c *gin.Context) {
 	groups, err := models.GetAllGroups(database.DB)
 	if err != nil {
@@ -295,6 +397,18 @@ func GetAllGroupsHandler(c *gin.Context) {
 	})
 }
 
+// UpdateGroupHandler updates a group by ID
+// @Summary      Update group
+// @Description  Update an existing group by its ID
+// @Tags         groups
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int           true  "Group ID"
+// @Param        request  body      GroupRequest  true  "Group Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /groups/{id} [patch]
 func UpdateGroupHandler(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
@@ -330,6 +444,17 @@ func UpdateGroupHandler(c *gin.Context) {
 	})
 }
 
+// DeleteGroupHandler deletes a group by ID
+// @Summary      Delete group
+// @Description  Delete a group by its ID
+// @Tags         groups
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Group ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Router       /groups/{id} [delete]
 func DeleteGroupHandler(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {

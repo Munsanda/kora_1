@@ -1,0 +1,444 @@
+basePath: /
+definitions:
+  handlers.FieldRequest:
+    type: object
+  handlers.FormFieldRequest:
+    type: object
+  handlers.FormRequest:
+    type: object
+  handlers.GroupRequest:
+    properties:
+      group_name:
+        type: string
+    required:
+    - group_name
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is the Kora API server for form management.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Kora API
+  version: "1.0"
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Returns a simple hello world message
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Hello World
+      tags:
+      - general
+  /field:
+    post:
+      consumes:
+      - application/json
+      description: Create a new field with label, type, and metadata
+      parameters:
+      - description: Field Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.FieldRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new field
+      tags:
+      - fields
+  /field/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a field by its ID
+      parameters:
+      - description: Field ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete field
+      tags:
+      - fields
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a field by its ID
+      parameters:
+      - description: Field ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get field by ID
+      tags:
+      - fields
+    patch:
+      consumes:
+      - application/json
+      description: Update an existing field by its ID
+      parameters:
+      - description: Field ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Field Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.FieldRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update field
+      tags:
+      - fields
+  /form:
+    post:
+      consumes:
+      - application/json
+      description: Create a new form with title, description, fields, and service
+        ID
+      parameters:
+      - description: Form Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.FormRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new form
+      tags:
+      - forms
+  /form_fields:
+    post:
+      consumes:
+      - application/json
+      description: Create an association between a form and a field with validations
+      parameters:
+      - description: Form Field Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.FormFieldRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create form field
+      tags:
+      - form-fields
+  /form_fields/multiple:
+    post:
+      consumes:
+      - application/json
+      description: Create multiple associations between a form and fields with validations
+      parameters:
+      - description: Form Field Requests
+        in: body
+        name: request
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/handlers.FormFieldRequest'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create multiple form fields
+      tags:
+      - form-fields
+  /groups:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all groups
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all groups
+      tags:
+      - groups
+    post:
+      consumes:
+      - application/json
+      description: Create a new group with a group name
+      parameters:
+      - description: Group Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.GroupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new group
+      tags:
+      - groups
+  /groups/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a group by its ID
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete group
+      tags:
+      - groups
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a group by its ID
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get group by ID
+      tags:
+      - groups
+    patch:
+      consumes:
+      - application/json
+      description: Update an existing group by its ID
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Group Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.GroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update group
+      tags:
+      - groups
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Returns the health status of the server and database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Health check
+      tags:
+      - general
+schemes:
+- http
+- https
+swagger: "2.0"

@@ -51,3 +51,21 @@ Clean up binary from the last build:
 ```bash
 make clean
 ```
+
+Generate Swagger documentation:
+```bash
+make swagger
+```
+
+## API Documentation
+
+This project uses Swagger/OpenAPI for API documentation. After starting the server, you can access the Swagger UI at:
+
+```
+http://localhost:8080/swagger/index.html
+```
+
+To regenerate the Swagger documentation after making changes to API handlers, run:
+```bash
+make swagger
+```

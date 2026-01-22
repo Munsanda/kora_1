@@ -44,6 +44,11 @@ clean:
 	@echo "Cleaning..."
 	@rm -f main
 
+# Generate Swagger documentation
+swagger:
+	@echo "Generating Swagger docs..."
+	@export PATH=$$PATH:$$(go env GOPATH)/bin && swag init -g cmd/api/main.go -o docs
+
 # Live Reload
 watch:
 	@if command -v air > /dev/null; then \
@@ -61,4 +66,4 @@ watch:
             fi; \
         fi
 
-.PHONY: all build run test clean watch docker-run docker-down itest
+.PHONY: all build run test clean watch docker-run docker-down itest swagger
