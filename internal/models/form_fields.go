@@ -9,7 +9,7 @@ import (
 type FormFields struct {
 	gorm.Model
 
-	FormID     uuid.UUID `gorm:"index;not null"`
+	FormID   uuid.UUID `gorm:"index;not null"`
 	FieldsID uuid.UUID `gorm:"index;not null"`
 
 	Position   int
@@ -20,8 +20,9 @@ type FormFields struct {
 	Fields Fields `gorm:"foreignKey:FieldsID"`
 }
 
-func CreateFormFields(db *gorm.DB, Fields FormFields) error {
-	return db.Create(&Fields).Error
+func CreateFormFields(db *gorm.DB, Fields FormFields) (FormFields, error) {
+	err := db.Create(&Fields).Error
+	return Fields, err
 }
 
 func GetFormFields(db *gorm.DB, id uuid.UUID) (FormFields, error) {
