@@ -53,6 +53,8 @@ func FormHandler(c *gin.Context) {
 	}
 }
 
+
+
 type FormFieldRequest struct {
 	FormID      uint           `json:"form_id" binding:"required"`
 	FieldsID    uint           `json:"fields_id" binding:"required"`
@@ -75,6 +77,28 @@ func CreateFormFieldsHandler(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "Form fields created successfully",
 		"data":    request,
+	})
+}
+
+//create an array of form fields
+func CreateMultipleFormFieldsHandler(c *gin.Context) {
+	var requests []FormFieldRequest
+	if err := c.ShouldBindJSON(&requests); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	for _, request := range requests {
+		models.CreateFormFields(database.DB, &models.FormFields{
+			FormID:      request.FormID,
+			FieldsID:    request.FieldsID,
+			Validations: request.Validations,
+		})
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Multiple form fields created successfully",
+		"data":    requests,
 	})
 }
 
