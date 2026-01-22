@@ -31,3 +31,7 @@ func UpdateFormFields(db *gorm.DB, Fields FormFields) error {
 func DeleteFormFields(db *gorm.DB, id uuid.UUID) error {
 	return db.Delete(&FormFields{}, id).Error
 }
+
+func UpdateFormStatus(db *gorm.DB, formId uint, status bool) error {
+	return db.Model(&Form{}).Where("id = ?", formId).Update("status", status).Error
+}

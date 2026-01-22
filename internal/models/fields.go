@@ -13,6 +13,9 @@ type Fields struct {
 	Meta datatypes.JSON `gorm:"type:jsonb"`
 
 	Forms []FormFields
+
+	IsRequired bool `gorm:"default:false"`
+	
 }
 
 func CreateFields(db *gorm.DB, Fields *Fields) error {

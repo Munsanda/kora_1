@@ -62,6 +62,56 @@ func FormHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, helpers.NewSuccess(request, "Form created successfully"))
 }
 
+//patch form handler here...
+// UpdateFormStatusHandler updates a form's status by ID
+// @Summary      Update form status
+// @Description  Update the status of an existing form by its ID
+// @Tags         forms
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                    true  "Form ID"
+// @Param        request  body      UpdateFormStatusRequest  true  "Form Status Request"
+// @Success      200      {object}  map[string]interface{}
+// @Failure      400      {object}  map[string]interface{}
+// @Failure      500      {object}  map[string]interface{}
+// @Router       /form/{id}/status [patch]
+func UpdateFormStatusHandler(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(400, gin.H{"error": "ID parameter is required"})
+		return
+	}
+
+	var formID uint
+	if _, err := parseID(id, &formID); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid ID format"})
+		return
+	}
+
+	var request UpdateFormStatusRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	statusBool, err := strconv.ParseBool(request.Status)
+	err = models.UpdateFormStatus(database.DB, formID, statusBool)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Form status updated successfully",
+		"data":    request,
+	})
+}
+
+type UpdateFormStatusRequest struct {
+	Status string `json:"status" binding:"required"`
+}
+
+
 type FormFieldRequest struct {
 	FormID      uint           `json:"form_id" binding:"required"`
 	FieldsID    uint           `json:"fields_id" binding:"required"`
@@ -162,6 +212,7 @@ func CreateMultipleFormFieldsHandler(c *gin.Context) {
 
 	c.JSON(http.StatusAccepted, helpers.NewSuccess(requests, "Form fields created successfully"))
 }
+
 
 // Field Handlers
 
