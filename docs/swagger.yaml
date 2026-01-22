@@ -26,18 +26,6 @@ definitions:
         type: boolean
     type: object
   handlers.FieldRequest:
-    properties:
-      label:
-        example: First Name
-        type: string
-      meta:
-        type: object
-      type:
-        example: text
-        type: string
-    required:
-    - label
-    - type
     type: object
   handlers.FieldResponse:
     properties:

@@ -16,6 +16,7 @@ func Migrate(db *gorm.DB) {
 		&models.FormFields{},
 		&models.Submission{},
 		&models.FormAnswer{},
+		&models.Group{},
 	)
 
 	if err != nil {

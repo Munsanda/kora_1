@@ -283,9 +283,9 @@ type FieldRequest struct {
 	Type       string         `json:"type" binding:"required"`
 	Meta       datatypes.JSON `json:"meta"`
 	IsRequired bool           `json:"is_required"`
-	Label string         `json:"label" binding:"required" example:"First Name"`
-	Type  string         `json:"type" binding:"required" example:"text"`
-	Meta  datatypes.JSON `json:"meta" swaggertype:"object"`
+	// Label string         `json:"label" binding:"required" example:"First Name"`
+	// Type  string         `json:"type" binding:"required" example:"text"`
+	// Meta  datatypes.JSON `json:"meta" swaggertype:"object"`
 }
 
 // FieldCreateSuccessResponse is a success response for field creation operations
@@ -650,6 +650,9 @@ func GetGroupByIDHandler(c *gin.Context) {
 		UpdatedAt: group.UpdatedAt.Format("2006-01-02T15:04:05Z"),
 		GroupName: group.GroupName,
 	}
+
+	// write a helpfull comment here explaining the purpose of this code block
+	// This code block checks if the DeletedAt field of the group is valid (i.e., if the group has been deleted).
 	if group.DeletedAt.Valid {
 		deletedAt := group.DeletedAt.Time.Format("2006-01-02T15:04:05Z")
 		groupResponse.DeletedAt = &deletedAt

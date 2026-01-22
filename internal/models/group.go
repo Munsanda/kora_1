@@ -4,8 +4,7 @@ import "gorm.io/gorm"
 
 type Group struct {
 	gorm.Model
-	GroupName string  `gorm:"size:100;not null;unique"`
-	Fields    []Field `gorm:"constraint:OnDelete:CASCADE"`
+	GroupName string `gorm:"size:100;not null;unique"`
 }
 
 func CreateGroup(db *gorm.DB, group *Group) error {
@@ -14,16 +13,17 @@ func CreateGroup(db *gorm.DB, group *Group) error {
 
 func GetGroupByID(db *gorm.DB, id uint) (*Group, error) {
 	var group Group
-	err := db.Preload("Fields").First(&group, id).Error
+	err := db.First(&group, id).Error
 	return &group, err
 }
 
 func GetAllGroups(db *gorm.DB) ([]Group, error) {
 	var groups []Group
-	err := db.Preload("Fields").Find(&groups).Error
+	err := db.Find(&groups).Error
 	return groups, err
 }
 
+// UpdateGroup updates the details of an existing group
 func UpdateGroup(db *gorm.DB, group *Group) error {
 	return db.Save(group).Error
 }

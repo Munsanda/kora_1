@@ -47,3 +47,21 @@ func ListServicesHandler(c *gin.Context) {
 		"data": helpers.NewSuccess(services, "Services retrieved successfully"),
 	})
 }
+
+func CreateServiceHandler(c *gin.Context) {
+	var request ServiceRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	service, err := models.CreateService(database.DB, request.Name)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to create service"})
+		return
+	}
+
+	c.JSON(201, gin.H{
+		"data": helpers.NewSuccess(service, "Service created successfully"),
+	})
+}
