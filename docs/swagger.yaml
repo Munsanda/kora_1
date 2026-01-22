@@ -70,7 +70,50 @@ definitions:
       status:
         type: boolean
     type: object
+  handlers.FormCreateResponse:
+    properties:
+      created_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      deleted_at:
+        type: string
+      description:
+        example: A form to collect contact information
+        type: string
+      id:
+        example: 1
+        type: integer
+      service_id:
+        example: 1
+        type: integer
+      title:
+        example: Contact Form
+        type: string
+      updated_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+    type: object
+  handlers.FormFieldReference:
+    properties:
+      fields_id:
+        type: integer
+      validations:
+        type: object
+    required:
+    - fields_id
+    type: object
   handlers.FormFieldRequest:
+    properties:
+      fields_id:
+        type: integer
+      form_id:
+        type: integer
+      validations:
+        type: object
+    required:
+    - fields_id
+    - form_id
+    - validations
     type: object
   handlers.FormFieldResponse:
     properties:
@@ -102,6 +145,22 @@ definitions:
         type: string
       status:
         type: boolean
+    type: object
+  handlers.FormRequest:
+    properties:
+      description:
+        type: string
+      fields:
+        items:
+          $ref: '#/definitions/handlers.FormFieldReference'
+        type: array
+      service_id:
+        type: integer
+      title:
+        type: string
+    required:
+    - service_id
+    - title
     type: object
   handlers.GroupCreateSuccessResponse:
     properties:
@@ -176,7 +235,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/handlers.FormFieldRequest'
+          $ref: '#/definitions/handlers.FormFieldResponse'
         type: array
       message:
         type: string
@@ -402,19 +461,19 @@ paths:
       - application/json
       description: Create a new reserved name with the provided name
       parameters:
-      - description: Reserved Name Request
+      - description: Form Request
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.ReservedNameRequest'
+          $ref: '#/definitions/handlers.FormRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handlers.ReservedNameCreateSuccessResponse'
+            $ref: '#/definitions/handlers.FormCreateResponse'
         "400":
           description: Bad Request
           schema:

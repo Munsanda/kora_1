@@ -248,12 +248,12 @@ const docTemplate = `{
                 "summary": "Create a new reserved name",
                 "parameters": [
                     {
-                        "description": "Reserved Name Request",
+                        "description": "Form Request",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.ReservedNameRequest"
+                            "$ref": "#/definitions/handlers.FormRequest"
                         }
                     }
                 ],
@@ -261,7 +261,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ReservedNameCreateSuccessResponse"
+                            "$ref": "#/definitions/handlers.FormCreateResponse"
                         }
                     },
                     "400": {
@@ -860,8 +860,70 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.FormCreateResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2024-01-01T00:00:00Z"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "A form to collect contact information"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "service_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Contact Form"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2024-01-01T00:00:00Z"
+                }
+            }
+        },
+        "handlers.FormFieldReference": {
+            "type": "object",
+            "required": [
+                "fields_id"
+            ],
+            "properties": {
+                "fields_id": {
+                    "type": "integer"
+                },
+                "validations": {
+                    "type": "object"
+                }
+            }
+        },
         "handlers.FormFieldRequest": {
-            "type": "object"
+            "type": "object",
+            "required": [
+                "fields_id",
+                "form_id",
+                "validations"
+            ],
+            "properties": {
+                "fields_id": {
+                    "type": "integer"
+                },
+                "form_id": {
+                    "type": "integer"
+                },
+                "validations": {
+                    "type": "object"
+                }
+            }
         },
         "handlers.FormFieldResponse": {
             "type": "object",
@@ -905,6 +967,30 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "boolean"
+                }
+            }
+        },
+        "handlers.FormRequest": {
+            "type": "object",
+            "required": [
+                "service_id",
+                "title"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.FormFieldReference"
+                    }
+                },
+                "service_id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },
@@ -1019,7 +1105,7 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handlers.FormFieldRequest"
+                        "$ref": "#/definitions/handlers.FormFieldResponse"
                     }
                 },
                 "message": {
