@@ -5,6 +5,7 @@ import (
 	"kora_1/internal/database"
 	"kora_1/internal/helpers"
 	"kora_1/internal/models"
+	_ "kora_1/internal/structs" // Required for Swagger annotations
 	"net/http"
 	"strconv"
 
@@ -27,9 +28,9 @@ type FormRequest struct {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      FormRequest  true  "Form Request"
-// @Success      200      {object}  map[string]interface{}
-// @Failure      400      {object}  map[string]interface{}
-// @Failure      500      {object}  map[string]interface{}
+// @Success      200      {object}  structs.SuccessResponse
+// @Failure      400      {object}  structs.ErrorResponse
+// @Failure      500      {object}  structs.ErrorResponse
 // @Router       /form [post]
 func FormHandler(c *gin.Context) {
 	var request FormRequest
