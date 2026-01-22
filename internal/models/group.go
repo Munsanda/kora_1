@@ -41,6 +41,7 @@ func DeleteGroup(db *gorm.DB, id uint) error {
 }
 
 // GetAllGroupFields retrieves all fields for a specific group in a specific form
+// Returns FormFields records that belong to the specified group
 func GetAllGroupFields(db *gorm.DB, formID uint, groupID uint) ([]FormFields, error) {
 	var formFields []FormFields
 	err := db.Where("form_id = ? AND group_id = ?", formID, groupID).

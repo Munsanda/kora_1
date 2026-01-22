@@ -167,6 +167,21 @@ type FormFieldResponse struct {
 	Validations map[string]interface{} `json:"validations" swaggertype:"object"`
 }
 
+// GroupFieldResponse represents a field in a group with complete field information
+type GroupFieldResponse struct {
+	FormFieldID uint                   `json:"form_field_id" example:"1"`
+	FormID      uint                   `json:"form_id" example:"1"`
+	FieldID     uint                   `json:"field_id" example:"1"`
+	GroupID     *uint                  `json:"group_id,omitempty" example:"2"`
+	Label       string                 `json:"label" example:"First Name"`
+	Type        string                 `json:"type" example:"text"`
+	Meta        map[string]interface{} `json:"meta" swaggertype:"object"`
+	IsRequired  bool                   `json:"is_required" example:"true"`
+	Validations map[string]interface{} `json:"validations" swaggertype:"object"`
+	CreatedAt   string                 `json:"created_at" example:"2024-01-01T00:00:00Z"`
+	UpdatedAt   string                 `json:"updated_at" example:"2024-01-01T00:00:05Z"`
+}
+
 // CreateFormFieldsHandler creates a form field association
 // @Summary      Create form field
 // @Description  Create an association between a form and a field with validations
@@ -757,13 +772,13 @@ func GetGroupFieldsHandler(c *gin.Context) {
 		return
 	}
 
-	// Transform FormFields to response format with Field details
-	var responses []FormFieldResponse
+	// Transform FormFields to response format with complete Field details
+	var responses []GroupFieldResponse
 	for _, formField := range formFields {
 		// Get the associated Field
 		field, err := models.GetFields(database.DB, formField.FieldsID)
 		if err != nil {
-			// Skip fields that can't be found, or log error
+			// Skip fields that can't be found
 			continue
 		}
 
@@ -783,18 +798,18 @@ func GetGroupFieldsHandler(c *gin.Context) {
 			}
 		}
 
-		response := FormFieldResponse{
-			ID:          formField.ID,
+		response := GroupFieldResponse{
+			FormFieldID: formField.ID,
+			FormID:      formField.FormID,
+			FieldID:     formField.FieldsID,
+			GroupID:     formField.GroupID,
+			Label:       field.Label,
+			Type:        field.Type,
+			Meta:        metaMap,
+			IsRequired:  field.IsRequired,
+			Validations: validationsMap,
 			CreatedAt:   formField.CreatedAt.Format("2006-01-02T15:04:05Z"),
 			UpdatedAt:   formField.UpdatedAt.Format("2006-01-02T15:04:05Z"),
-			FormID:      formField.FormID,
-			FieldsID:    formField.FieldsID,
-			Validations: validationsMap,
-		}
-
-		if formField.DeletedAt.Valid {
-			deletedAt := formField.DeletedAt.Time.Format("2006-01-02T15:04:05Z")
-			response.DeletedAt = &deletedAt
 		}
 
 		responses = append(responses, response)
