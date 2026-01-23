@@ -11,8 +11,6 @@ type Field struct {
 	Type  string `gorm:"size:50;not null"`
 
 	Meta datatypes.JSON `gorm:"many2many:form_fields;"`
-
-	Forms []FormFields `gorm:"many2many:form_fields;"`
 	
 	IsRequired bool `gorm:"default:false"`
 }

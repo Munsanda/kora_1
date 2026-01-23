@@ -10,7 +10,7 @@ type Form struct {
 	Status      int    `gorm:"default:0"`
 	Version     int    `gorm:"default:1"`
 
-	Fields []Field `gorm:"many2many:form_fields;"`
+	FormFields []FormFields `gorm:"foreignKey:FormID"`
 }
 
 func CreateForm(db *gorm.DB, form *Form) (*Form, error) {
@@ -18,21 +18,35 @@ func CreateForm(db *gorm.DB, form *Form) (*Form, error) {
 	return form, err
 }
 
-func GetForm(db *gorm.DB, id uint) (*Form, error) {
-	var form Form
+func CreateFormWithMutlipleFields(db *gorm.DB, form *Form, fields []Field) (*Form, error) {
+	err := db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(form).Error; err != nil {
+			return err
+		}
+		if err := tx.Model(form).Association("Fields").Append(fields); err != nil {
+			return err
+		}
+		return nil
+	})
+	return form, err
+}
 
-	err := db.
+// In models/form_model.go
+func GetForm(db *gorm.DB, id uint) (Form, error) {
+    var form Form
+
+    result := db.
 		Preload("FormFields").
 		Preload("FormFields.Field").
-		First(&form, id).
-		Error
+        First(&form, id)
 
-	if err != nil {
-		return nil, err
-	}
+    if result.Error != nil {
+        return Form{}, result.Error
+    }
 
-	return &form, nil
+    return form, nil
 }
+
 
 func UpdateForm(db *gorm.DB, form *Form) error {
 	return db.Save(form).Error
