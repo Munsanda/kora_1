@@ -158,4 +158,3 @@ func GetSubmissionsByFormIDHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, helpers.NewSuccess(submissions, "Submissions retrieved successfully"))
 }
-a
