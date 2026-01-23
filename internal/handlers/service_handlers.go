@@ -5,42 +5,18 @@ import (
 	"kora_1/internal/helpers"
 	"kora_1/internal/models"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-// ServiceResponse is a Swagger-friendly representation of Service
 type ServiceResponse struct {
-	ID        uint    `json:"id" example:"1"`
-	CreatedAt string  `json:"created_at" example:"2024-01-01T00:00:00Z"`
-	UpdatedAt string  `json:"updated_at" example:"2024-01-01T00:00:00Z"`
-	DeletedAt *string `json:"deleted_at,omitempty"`
-	Name      string  `json:"name" example:"User Service"`
-}
-
-// ServiceGetSuccessResponse is a success response containing a service
-type ServiceGetSuccessResponse struct {
-	Status  bool            `json:"status"`
-	Message string          `json:"message,omitempty"`
-	Data    ServiceResponse `json:"data,omitempty"`
-}
-
-// ServiceListSuccessResponse is a success response containing a list of services
-type ServiceListSuccessResponse struct {
-	Status  bool              `json:"status"`
-	Message string            `json:"message,omitempty"`
-	Data    []ServiceResponse `json:"data,omitempty"`
-}
-
-// ServiceCreateSuccessResponse is a success response containing a service
-type ServiceCreateSuccessResponse struct {
-	Status  bool            `json:"status"`
-	Message string          `json:"message,omitempty"`
-	Data    ServiceResponse `json:"data,omitempty"`
+	ID          uint   `json:"id"`
+	ServiceName string `json:"service_name"`
 }
 
 type ServiceRequest struct {
-	Name string `json:"name" binding:"required" example:"User Service"`
+	ServiceName string `json:"service_name" binding:"required"`
 }
 
 // GetServiceHandler retrieves a service by ID
@@ -50,32 +26,27 @@ type ServiceRequest struct {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Service ID"
-// @Success      200  {object}  ServiceGetSuccessResponse
-// @Failure      400  {object}  structs.ErrorResponse
-// @Failure      404  {object}  structs.ErrorResponse
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400,404  {object}  structs.ErrorResponse
 // @Router       /services/{id} [get]
 func GetServiceHandler(c *gin.Context) {
-	id := c.Param("id")
-	if id == "" {
-		c.JSON(400, gin.H{"error": "ID parameter is required"})
-		return
-	}
-
-	var serviceID uint
-	if _, err := parseID(id, &serviceID); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid ID format"})
-		return
-	}
-
-	service, err := models.GetServiceByID(database.DB, serviceID)
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		c.JSON(404, gin.H{"error": "Service not found"})
+		c.JSON(http.StatusBadRequest, helpers.NewError("Invalid ID", http.StatusBadRequest))
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"data": helpers.NewSuccess(service, "Service retrieved successfully"),
-	})
+	service, err := models.GetServiceByID(database.DB, uint(id))
+	if err != nil {
+		c.JSON(http.StatusNotFound, helpers.NewError("Service not found", http.StatusNotFound))
+		return
+	}
+
+	c.JSON(http.StatusOK, helpers.NewSuccess[ServiceResponse](ServiceResponse{
+		ID:          service.ID,
+		ServiceName: service.ServiceName,
+	}, "Service retrieved successfully"))
 }
 
 // ListServicesHandler retrieves all services
@@ -84,19 +55,25 @@ func GetServiceHandler(c *gin.Context) {
 // @Tags         services
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}  ServiceListSuccessResponse
+// @Success      200  {object}  map[string]interface{}
 // @Failure      500  {object}  structs.ErrorResponse
 // @Router       /services [get]
 func ListServicesHandler(c *gin.Context) {
 	services, err := models.ListAllServices(database.DB)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to retrieve services"})
+		c.JSON(http.StatusInternalServerError, helpers.NewError("Failed to retrieve services", http.StatusInternalServerError))
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"data": helpers.NewSuccess(services, "Services retrieved successfully"),
-	})
+	var response []ServiceResponse
+	for _, s := range services {
+		response = append(response, ServiceResponse{
+			ID:          s.ID,
+			ServiceName: s.ServiceName,
+		})
+	}
+
+	c.JSON(http.StatusOK, helpers.NewSuccess[[]ServiceResponse](response, "Services retrieved successfully"))
 }
 
 // AddServiceHandler creates a new service
@@ -106,9 +83,8 @@ func ListServicesHandler(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      ServiceRequest  true  "Service Request"
-// @Success      201      {object}  ServiceCreateSuccessResponse
-// @Failure      400      {object}  structs.ErrorResponse
-// @Failure      500      {object}  structs.ErrorResponse
+// @Success      201  {object}  map[string]interface{}
+// @Failure      400,500  {object}  structs.ErrorResponse
 // @Router       /services [post]
 func AddServiceHandler(c *gin.Context) {
 	var request ServiceRequest
@@ -117,11 +93,83 @@ func AddServiceHandler(c *gin.Context) {
 		return
 	}
 
-	service, err := models.CreateService(database.DB, request.Name)
+	service, err := models.CreateService(database.DB, request.ServiceName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
 		return
 	}
 
-	c.JSON(http.StatusCreated, helpers.NewSuccess(service, "Service created successfully"))
+	c.JSON(http.StatusCreated, helpers.NewSuccess[ServiceResponse](ServiceResponse{
+		ID:          service.ID,
+		ServiceName: service.ServiceName,
+	}, "Service created successfully"))
+}
+
+// UpdateServiceHandler updates a service
+// @Summary      Update a service
+// @Description  Update an existing service by its ID
+// @Tags         services
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int             true  "Service ID"
+// @Param        request  body      ServiceRequest  true  "Service Request"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400,404,500  {object}  structs.ErrorResponse
+// @Router       /services/{id} [put]
+func UpdateServiceHandler(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, helpers.NewError("Invalid ID", http.StatusBadRequest))
+		return
+	}
+
+	var request ServiceRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, helpers.NewError(err.Error(), http.StatusBadRequest))
+		return
+	}
+
+	service, err := models.GetServiceByID(database.DB, uint(id))
+	if err != nil {
+		c.JSON(http.StatusNotFound, helpers.NewError("Service not found", http.StatusNotFound))
+		return
+	}
+
+	service.ServiceName = request.ServiceName
+	if err := models.UpdateService(database.DB, service); err != nil {
+		c.JSON(http.StatusInternalServerError, helpers.NewError("Failed to update service", http.StatusInternalServerError))
+		return
+	}
+
+	c.JSON(http.StatusOK, helpers.NewSuccess[ServiceResponse](ServiceResponse{
+		ID:          service.ID,
+		ServiceName: service.ServiceName,
+	}, "Service updated successfully"))
+}
+
+// DeleteServiceHandler deletes a service
+// @Summary      Delete a service
+// @Description  Delete a service by its ID
+// @Tags         services
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Service ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400,500  {object}  structs.ErrorResponse
+// @Router       /services/{id} [delete]
+func DeleteServiceHandler(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, helpers.NewError("Invalid ID", http.StatusBadRequest))
+		return
+	}
+
+	if err := models.DeleteService(database.DB, uint(id)); err != nil {
+		c.JSON(http.StatusInternalServerError, helpers.NewError("Failed to delete service", http.StatusInternalServerError))
+		return
+	}
+
+	c.JSON(http.StatusOK, helpers.NewSuccess[any](nil, "Service deleted successfully"))
 }

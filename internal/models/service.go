@@ -3,8 +3,12 @@ package models
 import "gorm.io/gorm"
 
 type Service struct {
-	gorm.Model
-	Name string `gorm:"size:150;not null"`
+	ID          uint   `gorm:"primaryKey;autoIncrement"`
+	ServiceName string `gorm:"size:100;not null"`
+}
+
+func (Service) TableName() string {
+	return "services"
 }
 
 // Create creates a new service
@@ -44,7 +48,7 @@ func GetServiceByID(db *gorm.DB, id uint) (*Service, error) {
 
 // CreateService creates a new service (standalone function)
 func CreateService(db *gorm.DB, name string) (*Service, error) {
-	service := &Service{Name: name}
+	service := &Service{ServiceName: name}
 	if err := db.Create(service).Error; err != nil {
 		return nil, err
 	}

@@ -11,13 +11,19 @@ import (
 func Migrate(db *gorm.DB) {
 
 	err := db.AutoMigrate(
-		&models.Form{},
+		&models.User{},
+		&models.Service{},
+		&models.DataType{},
+		&models.Group{},
+		&models.Collection{},
+		&models.CollectionItem{},
+		&models.FormGroup{},
+		&models.ReservedName{},
 		&models.Field{},
+		&models.Form{},
 		&models.FormFields{},
 		&models.Submission{},
 		&models.FormAnswer{},
-		// &models.Group{},
-		&models.ReservedName{},
 	)
 
 	if err != nil {
