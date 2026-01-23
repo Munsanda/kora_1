@@ -1,18 +1,24 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
 type Submission struct {
-	gorm.Model
-	FormID      uint `gorm:"index"`
-	FormVersion int
+	ID         uint      `gorm:"primaryKey;autoIncrement"`
+	ServicesID *uint     `gorm:"index"`
+	CreatedBy  *uint     `gorm:"index"`
+	CreatedOn  time.Time `gorm:"default:CURRENT_TIMESTAMP"`
 
-	CreatedByUserId uint   `gorm:"index"`
-	Status          string `gorm:"size:30;default:'submitted'"`
+	// Associations
+	Service *Service `gorm:"foreignKey:ServicesID"`
+	User    *User    `gorm:"foreignKey:CreatedBy"`
+}
 
-	Answers []FormAnswer `gorm:"constraint:OnDelete:CASCADE"`
+func (Submission) TableName() string {
+	return "submissions"
 }
 
 func CreateSubmission(db *gorm.DB, submission *Submission) error {
@@ -21,14 +27,8 @@ func CreateSubmission(db *gorm.DB, submission *Submission) error {
 
 func GetSubmission(db *gorm.DB, id uint) (*Submission, error) {
 	var submission Submission
-	err := db.Preload("Answers").First(&submission, id).Error
+	err := db.Preload("Service").Preload("User").First(&submission, id).Error
 	return &submission, err
-}
-
-func GetSubmissionsByFormID(db *gorm.DB, formID uint) ([]Submission, error) {
-	var submissions []Submission
-	err := db.Preload("Answers").Where("form_id = ?", formID).Find(&submissions).Error
-	return submissions, err
 }
 
 func UpdateSubmission(db *gorm.DB, submission *Submission) error {

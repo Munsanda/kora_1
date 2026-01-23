@@ -1,121 +1,54 @@
 basePath: /
 definitions:
-  handlers.FieldCreateSuccessResponse:
+  handlers.CollectionItemRequest:
     properties:
-      data:
-        $ref: '#/definitions/handlers.FieldRequest'
-      message:
+      collection_id:
+        type: integer
+      collection_item:
         type: string
-      status:
-        type: boolean
+      relation_collection_items_id:
+        type: integer
     type: object
-  handlers.FieldDeleteSuccessResponse:
+  handlers.CollectionRequest:
     properties:
-      message:
+      collection_name:
         type: string
-      status:
-        type: boolean
+    required:
+    - collection_name
     type: object
-  handlers.FieldGetSuccessResponse:
+  handlers.DataTypeRequest:
     properties:
-      data:
-        $ref: '#/definitions/handlers.FieldResponse'
-      message:
+      data_type:
         type: string
-      status:
-        type: boolean
+    required:
+    - data_type
     type: object
   handlers.FieldRequest:
     properties:
-      is_required:
-        type: boolean
-      label:
-        type: string
-      meta:
-        type: object
-      type:
-        type: string
-    required:
-    - label
-    - type
-    type: object
-  handlers.FieldResponse:
-    properties:
-      created_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-      deleted_at:
-        type: string
-      id:
-        example: 1
+      collection_id:
+        type: integer
+      data_type_id:
+        type: integer
+      group_id:
         type: integer
       label:
-        example: First Name
-        type: string
-      meta:
-        type: object
-      type:
-        example: text
-        type: string
-      updated_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-    type: object
-  handlers.FieldUpdateSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.FieldRequest'
-      message:
         type: string
       status:
         type: boolean
-    type: object
-  handlers.FormAnswerResponse:
-    properties:
-      answer:
-        example: John Doe
-        type: string
-      answer_json:
-        type: string
-      created_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-      deleted_at:
-        type: string
-      id:
-        example: 1
-        type: integer
-      question_id:
-        example: 1
-        type: integer
-      submission_id:
-        example: 1
-        type: integer
-      updated_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-    type: object
-  handlers.FormCreateResponse:
-    properties:
-      description:
-        example: A form to collect contact information
-        type: string
-      id:
-        example: 1
-        type: integer
-      service_id:
-        example: 1
-        type: integer
-      title:
-        example: Contact Form
-        type: string
+    required:
+    - data_type_id
+    - label
     type: object
   handlers.FormFieldReference:
     properties:
+      field_row:
+        type: integer
+      field_span:
+        type: integer
       fields_id:
         type: integer
       validations:
-        type: object
+        type: string
     required:
     - fields_id
     type: object
@@ -123,119 +56,48 @@ definitions:
     properties:
       field_id:
         type: integer
+      field_row:
+        type: integer
+      field_span:
+        type: integer
+      form_group_id:
+        type: integer
       form_id:
         type: integer
-      validations:
-        type: object
+      validation:
+        type: string
     required:
     - field_id
     - form_id
-    - validations
     type: object
-  handlers.FormFieldResponse:
+  handlers.FormGroupRequest:
     properties:
-      created_at:
-        example: "2024-01-01T00:00:00Z"
+      group_name:
         type: string
-      deleted_at:
-        type: string
-      fields_id:
-        example: 1
+      group_row:
         type: integer
-      form_id:
-        example: 1
+      group_span:
         type: integer
-      id:
-        example: 1
-        type: integer
-      updated_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-      validations:
-        type: object
-    type: object
-  handlers.FormFieldSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.FormFieldResponse'
-      message:
-        type: string
-      status:
-        type: boolean
     type: object
   handlers.FormRequest:
     properties:
+      data_type_id:
+        type: integer
       description:
         type: string
       fields:
         items:
           $ref: '#/definitions/handlers.FormFieldReference'
         type: array
+      form_name:
+        type: string
       service_id:
         type: integer
-      title:
-        type: string
+      status:
+        type: boolean
     required:
-    - service_id
-    - title
-    type: object
-  handlers.FormResponse:
-    properties:
-      created_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-      deleted_at:
-        type: string
-      description:
-        example: A form to collect contact information
-        type: string
-      fields:
-        items:
-          $ref: '#/definitions/handlers.FieldResponse'
-        type: array
-      id:
-        example: 1
-        type: integer
-      service_id:
-        example: 1
-        type: integer
-      status:
-        example: 1
-        type: integer
-      title:
-        example: Contact Form
-        type: string
-      updated_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-      version:
-        example: 1
-        type: integer
-    type: object
-  handlers.GroupCreateSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.GroupRequest'
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.GroupDeleteSuccessResponse:
-    properties:
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.GroupGetSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.GroupResponse'
-      message:
-        type: string
-      status:
-        type: boolean
+    - data_type_id
+    - form_name
     type: object
   handlers.GroupRequest:
     properties:
@@ -244,220 +106,221 @@ definitions:
     required:
     - group_name
     type: object
-  handlers.GroupResponse:
-    properties:
-      created_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-      deleted_at:
-        type: string
-      group_name:
-        example: Personal Information
-        type: string
-      id:
-        example: 1
-        type: integer
-      updated_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-    type: object
-  handlers.GroupUpdateSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.GroupRequest'
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.GroupsListSuccessResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/handlers.GroupResponse'
-        type: array
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.MultipleFormFieldsSuccessResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/handlers.FormFieldResponse'
-        type: array
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.ReservedNameCreateSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.ReservedNameResponse'
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.ReservedNameListSuccessResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/handlers.ReservedNameResponse'
-        type: array
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
   handlers.ReservedNameRequest:
     properties:
-      name:
-        example: admin
+      reserved_name:
         type: string
     required:
-    - name
-    type: object
-  handlers.ReservedNameResponse:
-    properties:
-      created_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-      deleted_at:
-        type: string
-      id:
-        example: 1
-        type: integer
-      name:
-        example: admin
-        type: string
-      updated_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-    type: object
-  handlers.ServiceCreateSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.ServiceResponse'
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.ServiceGetSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.ServiceResponse'
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.ServiceListSuccessResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/handlers.ServiceResponse'
-        type: array
-      message:
-        type: string
-      status:
-        type: boolean
+    - reserved_name
     type: object
   handlers.ServiceRequest:
     properties:
-      name:
-        example: User Service
+      service_name:
         type: string
     required:
-    - name
+    - service_name
     type: object
-  handlers.ServiceResponse:
-    properties:
-      created_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-      deleted_at:
-        type: string
-      id:
-        example: 1
-        type: integer
-      name:
-        example: User Service
-        type: string
-      updated_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-    type: object
-  handlers.SubmissionCreateSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.SubmissionResponse'
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.SubmissionGetSuccessResponse:
-    properties:
-      data:
-        $ref: '#/definitions/handlers.SubmissionResponse'
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.SubmissionListSuccessResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/handlers.SubmissionResponse'
-        type: array
-      message:
-        type: string
-      status:
-        type: boolean
-    type: object
-  handlers.SubmissionResponse:
+  handlers.SubmitFormRequest:
     properties:
       answers:
         items:
-          $ref: '#/definitions/handlers.FormAnswerResponse'
+          $ref: '#/definitions/models.FormAnswer'
         type: array
-      created_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
-      created_by_user_id:
-        example: 1
+      created_by:
         type: integer
-      deleted_at:
-        type: string
-      form_id:
-        example: 1
+      services_id:
         type: integer
-      form_version:
-        example: 1
-        type: integer
-      id:
-        example: 1
-        type: integer
-      status:
-        example: submitted
-        type: string
-      updated_at:
-        example: "2024-01-01T00:00:00Z"
-        type: string
+    required:
+    - answers
     type: object
-  handlers.SubmitFormRequest:
-    type: object
-  handlers.UpdateFormStatusRequest:
+  handlers.UserRequest:
     properties:
-      status:
+      dob:
+        description: Format "YYYY-MM-DD"
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      middle_name:
+        type: string
+      password:
+        type: string
+      surname:
         type: string
     required:
-    - status
+    - email
+    type: object
+  models.Collection:
+    properties:
+      collectionName:
+        type: string
+      id:
+        type: integer
+    type: object
+  models.DataType:
+    properties:
+      dataType:
+        type: string
+      id:
+        type: integer
+    type: object
+  models.Field:
+    properties:
+      collection:
+        $ref: '#/definitions/models.Collection'
+      collectionID:
+        type: integer
+      dataType:
+        allOf:
+        - $ref: '#/definitions/models.DataType'
+        description: Associations
+      dataTypeID:
+        type: integer
+      group:
+        $ref: '#/definitions/models.Group'
+      groupID:
+        type: integer
+      id:
+        type: integer
+      label:
+        type: string
+      status:
+        description: Using pointer for nullable boolean
+        type: boolean
+    type: object
+  models.Form:
+    properties:
+      dataType:
+        $ref: '#/definitions/models.DataType'
+      dataTypeID:
+        description: Added as required
+        type: integer
+      description:
+        type: string
+      formName:
+        type: string
+      id:
+        description: 'No auto-increment in schema based on "id INT" vs "INT NOT NULL
+          GENERATED BY DEFAULT..."? Ah wait, schema says "id INT". It doesn''t denote
+          "GENERATED". Usually primary keys are generated. I will assume it''s NOT
+          auto-increment if the schema explicitly omitted it, or it might be input-provided.
+          But typically for ''id'' PK it is. The schema provided for ''forms'' says:
+          "id INT, ... CONSTRAINT pk_forms_id PRIMARY KEY (id)". It lacks "GENERATED
+          BY DEFAULT AS IDENTITY". I will NOT add autoIncrement to be safe, or user
+          might provide IDs. But wait, typically models use uint for ID.'
+        type: integer
+      service:
+        allOf:
+        - $ref: '#/definitions/models.Service'
+        description: Associations
+      serviceID:
+        type: integer
+      status:
+        type: boolean
+    type: object
+  models.FormAnswer:
+    properties:
+      answer:
+        type: string
+      formField:
+        allOf:
+        - $ref: '#/definitions/models.FormFields'
+        description: Associations
+      formFieldID:
+        type: integer
+      id:
+        type: integer
+      submission:
+        $ref: '#/definitions/models.Submission'
+      submissionID:
+        type: integer
+    type: object
+  models.FormFields:
+    properties:
+      field:
+        $ref: '#/definitions/models.Field'
+      fieldID:
+        type: integer
+      fieldName:
+        type: string
+      fieldRow:
+        type: integer
+      fieldSpan:
+        type: integer
+      form:
+        allOf:
+        - $ref: '#/definitions/models.Form'
+        description: Associations
+      formGroup:
+        $ref: '#/definitions/models.FormGroup'
+      formGroupID:
+        type: integer
+      formID:
+        type: integer
+      id:
+        type: integer
+      validation:
+        type: string
+    type: object
+  models.FormGroup:
+    properties:
+      groupName:
+        type: string
+      groupRow:
+        type: integer
+      groupSpan:
+        type: integer
+      id:
+        type: integer
+    type: object
+  models.Group:
+    properties:
+      groupName:
+        type: string
+      id:
+        type: integer
+    type: object
+  models.Service:
+    properties:
+      id:
+        type: integer
+      serviceName:
+        type: string
+    type: object
+  models.Submission:
+    properties:
+      createdBy:
+        type: integer
+      createdOn:
+        type: string
+      id:
+        type: integer
+      service:
+        allOf:
+        - $ref: '#/definitions/models.Service'
+        description: Associations
+      servicesID:
+        type: integer
+      user:
+        $ref: '#/definitions/models.User'
+    type: object
+  models.User:
+    properties:
+      dob:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: integer
+      middleName:
+        type: string
+      password:
+        type: string
+      surname:
+        type: string
     type: object
   structs.ErrorResponse:
     properties:
@@ -482,28 +345,436 @@ info:
   title: Kora API
   version: "1.0"
 paths:
-  /:
-    get:
+  /collection_items:
+    post:
       consumes:
       - application/json
-      description: Returns a simple hello world message
+      description: Create a new collection item
+      parameters:
+      - description: Collection Item Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CollectionItemRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Create collection item
+      tags:
+      - collection-items
+  /collection_items/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a collection item by its ID
+      parameters:
+      - description: Collection Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
+            additionalProperties: true
             type: object
-      summary: Hello World
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Delete collection item
       tags:
-      - general
+      - collection-items
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a collection item by its ID
+      parameters:
+      - description: Collection Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get collection item
+      tags:
+      - collection-items
+    put:
+      consumes:
+      - application/json
+      description: Update an existing collection item by its ID
+      parameters:
+      - description: Collection Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Collection Item Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CollectionItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Update collection item
+      tags:
+      - collection-items
+  /collections:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all collections
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get all collections
+      tags:
+      - collections
+    post:
+      consumes:
+      - application/json
+      description: Create a new collection with the provided name
+      parameters:
+      - description: Collection Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CollectionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Create a new collection
+      tags:
+      - collections
+  /collections/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a collection by its ID
+      parameters:
+      - description: Collection ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Delete collection
+      tags:
+      - collections
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a collection by its ID
+      parameters:
+      - description: Collection ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get collection by ID
+      tags:
+      - collections
+    put:
+      consumes:
+      - application/json
+      description: Update an existing collection by its ID
+      parameters:
+      - description: Collection ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Collection Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CollectionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Update collection
+      tags:
+      - collections
+  /data_types:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all data types
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get all data types
+      tags:
+      - data-types
+    post:
+      consumes:
+      - application/json
+      description: Create a new data type
+      parameters:
+      - description: Data Type Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.DataTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Create data type
+      tags:
+      - data-types
+  /data_types/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a data type by its ID
+      parameters:
+      - description: Data Type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Delete data type
+      tags:
+      - data-types
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a data type by its ID
+      parameters:
+      - description: Data Type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get data type
+      tags:
+      - data-types
+    put:
+      consumes:
+      - application/json
+      description: Update an existing data type by its ID
+      parameters:
+      - description: Data Type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data Type Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.DataTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Update data type
+      tags:
+      - data-types
   /field:
     post:
       consumes:
       - application/json
-      description: Create a new field with label, type, and metadata
+      description: Create a new field
       parameters:
       - description: Field Request
         in: body
@@ -517,7 +788,8 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handlers.FieldCreateSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -526,7 +798,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/structs.ErrorResponse'
-      summary: Create a new field
+      summary: Create field
       tags:
       - fields
   /field/{id}:
@@ -546,7 +818,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.FieldDeleteSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -574,7 +847,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.FieldGetSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -583,10 +857,10 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/structs.ErrorResponse'
-      summary: Get field by ID
+      summary: Get field
       tags:
       - fields
-    patch:
+    put:
       consumes:
       - application/json
       description: Update an existing field by its ID
@@ -608,9 +882,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.FieldUpdateSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/structs.ErrorResponse'
         "500":
@@ -624,7 +903,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new form name with the provided fields
+      description: Create a new form with fields
       parameters:
       - description: Form Request
         in: body
@@ -638,7 +917,8 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handlers.FormCreateResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -647,14 +927,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/structs.ErrorResponse'
-      summary: Create a new form name
+      summary: Create a new form
       tags:
       - form
   /form/{id}:
-    get:
+    delete:
       consumes:
       - application/json
-      description: Retrieve a form by ID, including all form fields
+      description: Delete a form by its ID
       parameters:
       - description: Form ID
         in: path
@@ -667,39 +947,64 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.FormResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
-        "404":
-          description: Not Found
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get a form with all fields
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Delete form
       tags:
       - form
-  /form/{id}/status:
-    patch:
+    get:
       consumes:
       - application/json
-      description: Update the status of an existing form by its ID
+      description: Retrieve a form by its ID
       parameters:
       - description: Form ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Form Status Request
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get form by ID
+      tags:
+      - form
+    put:
+      consumes:
+      - application/json
+      description: Update an existing form by its ID
+      parameters:
+      - description: Form ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Form Request
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.UpdateFormStatusRequest'
+          $ref: '#/definitions/handlers.FormRequest'
       produces:
       - application/json
       responses:
@@ -711,21 +1016,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
-      summary: Update form status
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Update form
       tags:
       - form
   /form_fields:
     post:
       consumes:
       - application/json
-      description: Create an association between a form and a field with validations
+      description: Create a form field association
       parameters:
       - description: Form Field Request
         in: body
@@ -736,10 +1043,11 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            $ref: '#/definitions/handlers.FormFieldSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -755,7 +1063,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create multiple associations between a form and fields with validations
+      description: Create multiple form field associations
       parameters:
       - description: Form Field Requests
         in: body
@@ -768,10 +1076,11 @@ paths:
       produces:
       - application/json
       responses:
-        "202":
-          description: Accepted
+        "200":
+          description: OK
           schema:
-            $ref: '#/definitions/handlers.MultipleFormFieldsSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -783,6 +1092,154 @@ paths:
       summary: Create multiple form fields
       tags:
       - form-fields
+  /form_groups:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all form groups
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get all form groups
+      tags:
+      - form-groups
+    post:
+      consumes:
+      - application/json
+      description: Create a new form group
+      parameters:
+      - description: Form Group Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.FormGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Create form group
+      tags:
+      - form-groups
+  /form_groups/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a form group by its ID
+      parameters:
+      - description: Form Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Delete form group
+      tags:
+      - form-groups
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a form group by its ID
+      parameters:
+      - description: Form Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get form group
+      tags:
+      - form-groups
+    put:
+      consumes:
+      - application/json
+      description: Update an existing form group by its ID
+      parameters:
+      - description: Form Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Form Group Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.FormGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Update form group
+      tags:
+      - form-groups
   /groups:
     get:
       consumes:
@@ -794,7 +1251,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.GroupsListSuccessResponse'
+            additionalProperties: true
+            type: object
         "500":
           description: Internal Server Error
           schema:
@@ -805,7 +1263,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new group with a group name
+      description: Create a new group
       parameters:
       - description: Group Request
         in: body
@@ -819,7 +1277,8 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handlers.GroupCreateSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -828,7 +1287,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/structs.ErrorResponse'
-      summary: Create a new group
+      summary: Create group
       tags:
       - groups
   /groups/{id}:
@@ -848,7 +1307,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.GroupDeleteSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -876,7 +1336,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.GroupGetSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -885,10 +1346,10 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/structs.ErrorResponse'
-      summary: Get group by ID
+      summary: Get group
       tags:
       - groups
-    patch:
+    put:
       consumes:
       - application/json
       description: Update an existing group by its ID
@@ -910,9 +1371,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.GroupUpdateSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/structs.ErrorResponse'
         "500":
@@ -922,27 +1388,11 @@ paths:
       summary: Update group
       tags:
       - groups
-  /health:
-    get:
-      consumes:
-      - application/json
-      description: Returns the health status of the server and database
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Health check
-      tags:
-      - general
   /reserved-name:
     post:
       consumes:
       - application/json
-      description: Create a new reserved name with the provided name
+      description: Create a new reserved name
       parameters:
       - description: Reserved Name Request
         in: body
@@ -956,7 +1406,8 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handlers.ReservedNameCreateSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -965,7 +1416,37 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/structs.ErrorResponse'
-      summary: Create a new reserved name
+      summary: Create reserved name
+      tags:
+      - reserved-name
+  /reserved-name/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a reserved name by its ID
+      parameters:
+      - description: Reserved Name ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Delete reserved name
       tags:
       - reserved-name
   /reserved-name/{name}:
@@ -986,7 +1467,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.ReservedNameListSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -995,7 +1477,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/structs.ErrorResponse'
-      summary: Get reserved names by name
+      summary: Get reserved names
       tags:
       - reserved-name
   /services:
@@ -1009,7 +1491,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.ServiceListSuccessResponse'
+            additionalProperties: true
+            type: object
         "500":
           description: Internal Server Error
           schema:
@@ -1034,7 +1517,8 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handlers.ServiceCreateSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -1047,6 +1531,35 @@ paths:
       tags:
       - services
   /services/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a service by its ID
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Delete a service
+      tags:
+      - services
     get:
       consumes:
       - application/json
@@ -1063,7 +1576,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.ServiceGetSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -1075,11 +1589,50 @@ paths:
       summary: Get service by ID
       tags:
       - services
+    put:
+      consumes:
+      - application/json
+      description: Update an existing service by its ID
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Service Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ServiceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Update a service
+      tags:
+      - services
   /submission:
     post:
       consumes:
       - application/json
-      description: Create a new form submission with form ID and answers
+      description: Create a new form submission
       parameters:
       - description: Submission Request
         in: body
@@ -1093,7 +1646,8 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handlers.SubmissionCreateSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -1122,7 +1676,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.SubmissionGetSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -1131,18 +1686,23 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
       summary: Get submission by ID
       tags:
       - submissions
-  /submission/form/{form_id}:
+  /submission/service/{service_id}:
     get:
       consumes:
       - application/json
-      description: Retrieve all submissions for a specific form by its form ID
+      description: Retrieve all submissions for a specific service by its Service
+        ID
       parameters:
-      - description: Form ID
+      - description: Service ID
         in: path
-        name: form_id
+        name: service_id
         required: true
         type: integer
       produces:
@@ -1151,7 +1711,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.SubmissionListSuccessResponse'
+            additionalProperties: true
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -1160,9 +1721,138 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/structs.ErrorResponse'
-      summary: Get submissions by form ID
+      summary: Get submissions by Service ID
       tags:
       - submissions
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: User Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Create user
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user by its ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Delete user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a user by its ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get user by ID
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update an existing user by its ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Update user
+      tags:
+      - users
 schemes:
 - http
 - https

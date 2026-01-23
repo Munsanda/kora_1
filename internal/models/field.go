@@ -1,32 +1,37 @@
 package models
 
-import (
-	"gorm.io/datatypes"
-	"gorm.io/gorm"
-)
+import "gorm.io/gorm"
 
 type Field struct {
-	gorm.Model
-	Label string `gorm:"size:255;not null"`
-	Type  string `gorm:"size:50;not null"`
+	ID           uint   `gorm:"primaryKey;autoIncrement"`
+	Label        string `gorm:"size:50;not null"`
+	DataTypeID   uint   `gorm:"not null"`
+	GroupID      *uint  `gorm:"index"`
+	CollectionID *uint  `gorm:"index"`
+	Status       *bool  `gorm:"default:null"` // Using pointer for nullable boolean
 
-	Meta datatypes.JSON `gorm:"many2many:form_fields;"`
-	
-	IsRequired bool `gorm:"default:false"`
+	// Associations
+	DataType   DataType    `gorm:"foreignKey:DataTypeID"`
+	Group      *Group      `gorm:"foreignKey:GroupID"`
+	Collection *Collection `gorm:"foreignKey:CollectionID"`
 }
 
-func CreateFields(db *gorm.DB, Fields *Field) error {
-	return db.Create(Fields).Error
+func (Field) TableName() string {
+	return "fields"
+}
+
+func CreateFields(db *gorm.DB, field *Field) error {
+	return db.Create(field).Error
 }
 
 func GetFields(db *gorm.DB, id uint) (*Field, error) {
-	var Fields Field
-	err := db.First(&Fields, id).Error
-	return &Fields, err
+	var field Field
+	err := db.Preload("DataType").Preload("Group").Preload("Collection").First(&field, id).Error
+	return &field, err
 }
 
-func UpdateFields(db *gorm.DB, Fields *Field) error {
-	return db.Save(Fields).Error
+func UpdateFields(db *gorm.DB, field *Field) error {
+	return db.Save(field).Error
 }
 
 func DeleteFields(db *gorm.DB, id uint) error {

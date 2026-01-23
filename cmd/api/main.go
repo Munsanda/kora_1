@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	_ "kora_1/docs" // Swagger docs
 	"kora_1/internal/server"
 )
 

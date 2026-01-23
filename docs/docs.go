@@ -24,9 +24,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/": {
-            "get": {
-                "description": "Returns a simple hello world message",
+        "/collection_items": {
+            "post": {
+                "description": "Create a new collection item",
                 "consumes": [
                     "application/json"
                 ],
@@ -34,17 +34,626 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "general"
+                    "collection-items"
                 ],
-                "summary": "Hello World",
+                "summary": "Create collection item",
+                "parameters": [
+                    {
+                        "description": "Collection Item Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CollectionItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/collection_items/{id}": {
+            "get": {
+                "description": "Retrieve a collection item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collection-items"
+                ],
+                "summary": "Get collection item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Collection Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing collection item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collection-items"
+                ],
+                "summary": "Update collection item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Collection Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Collection Item Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CollectionItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a collection item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collection-items"
+                ],
+                "summary": "Delete collection item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Collection Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/collections": {
+            "get": {
+                "description": "Retrieve all collections",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collections"
+                ],
+                "summary": "Get all collections",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new collection with the provided name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collections"
+                ],
+                "summary": "Create a new collection",
+                "parameters": [
+                    {
+                        "description": "Collection Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CollectionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/collections/{id}": {
+            "get": {
+                "description": "Retrieve a collection by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collections"
+                ],
+                "summary": "Get collection by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Collection ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing collection by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collections"
+                ],
+                "summary": "Update collection",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Collection ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Collection Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CollectionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a collection by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collections"
+                ],
+                "summary": "Delete collection",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Collection ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/data_types": {
+            "get": {
+                "description": "Retrieve all data types",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data-types"
+                ],
+                "summary": "Get all data types",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new data type",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data-types"
+                ],
+                "summary": "Create data type",
+                "parameters": [
+                    {
+                        "description": "Data Type Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.DataTypeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/data_types/{id}": {
+            "get": {
+                "description": "Retrieve a data type by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data-types"
+                ],
+                "summary": "Get data type",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Data Type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing data type by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data-types"
+                ],
+                "summary": "Update data type",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Data Type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data Type Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.DataTypeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a data type by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data-types"
+                ],
+                "summary": "Delete data type",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Data Type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
                         }
                     }
                 }
@@ -52,7 +661,7 @@ const docTemplate = `{
         },
         "/field": {
             "post": {
-                "description": "Create a new field with label, type, and metadata",
+                "description": "Create a new field",
                 "consumes": [
                     "application/json"
                 ],
@@ -62,7 +671,7 @@ const docTemplate = `{
                 "tags": [
                     "fields"
                 ],
-                "summary": "Create a new field",
+                "summary": "Create field",
                 "parameters": [
                     {
                         "description": "Field Request",
@@ -78,7 +687,8 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.FieldCreateSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -108,7 +718,7 @@ const docTemplate = `{
                 "tags": [
                     "fields"
                 ],
-                "summary": "Get field by ID",
+                "summary": "Get field",
                 "parameters": [
                     {
                         "type": "integer",
@@ -122,7 +732,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.FieldGetSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -139,49 +750,7 @@ const docTemplate = `{
                     }
                 }
             },
-            "delete": {
-                "description": "Delete a field by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "fields"
-                ],
-                "summary": "Delete field",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Field ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.FieldDeleteSuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/structs.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/structs.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "patch": {
+            "put": {
                 "description": "Update an existing field by its ID",
                 "consumes": [
                     "application/json"
@@ -215,7 +784,57 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.FieldUpdateSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a field by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "fields"
+                ],
+                "summary": "Delete field",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Field ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -235,7 +854,7 @@ const docTemplate = `{
         },
         "/form": {
             "post": {
-                "description": "Create a new form name with the provided fields",
+                "description": "Create a new form with fields",
                 "consumes": [
                     "application/json"
                 ],
@@ -245,7 +864,7 @@ const docTemplate = `{
                 "tags": [
                     "form"
                 ],
-                "summary": "Create a new form name",
+                "summary": "Create a new form",
                 "parameters": [
                     {
                         "description": "Form Request",
@@ -261,7 +880,8 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.FormCreateResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -281,7 +901,7 @@ const docTemplate = `{
         },
         "/form/{id}": {
             "get": {
-                "description": "Retrieve a form by ID, including all form fields",
+                "description": "Retrieve a form by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -291,7 +911,7 @@ const docTemplate = `{
                 "tags": [
                     "form"
                 ],
-                "summary": "Get a form with all fields",
+                "summary": "Get form by ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -305,33 +925,26 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.FormResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/structs.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/structs.ErrorResponse"
                         }
                     }
                 }
-            }
-        },
-        "/form/{id}/status": {
-            "patch": {
-                "description": "Update the status of an existing form by its ID",
+            },
+            "put": {
+                "description": "Update an existing form by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -341,7 +954,7 @@ const docTemplate = `{
                 "tags": [
                     "form"
                 ],
-                "summary": "Update form status",
+                "summary": "Update form",
                 "parameters": [
                     {
                         "type": "integer",
@@ -351,12 +964,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Form Status Request",
+                        "description": "Form Request",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdateFormStatusRequest"
+                            "$ref": "#/definitions/handlers.FormRequest"
                         }
                     }
                 ],
@@ -371,15 +984,62 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a form by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "form"
+                ],
+                "summary": "Delete form",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Form ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
                             "type": "object",
                             "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
                         }
                     }
                 }
@@ -387,7 +1047,7 @@ const docTemplate = `{
         },
         "/form_fields": {
             "post": {
-                "description": "Create an association between a form and a field with validations",
+                "description": "Create a form field association",
                 "consumes": [
                     "application/json"
                 ],
@@ -410,10 +1070,11 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.FormFieldSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -433,7 +1094,7 @@ const docTemplate = `{
         },
         "/form_fields/multiple": {
             "post": {
-                "description": "Create multiple associations between a form and fields with validations",
+                "description": "Create multiple form field associations",
                 "consumes": [
                     "application/json"
                 ],
@@ -459,10 +1120,232 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "202": {
-                        "description": "Accepted",
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.MultipleFormFieldsSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/form_groups": {
+            "get": {
+                "description": "Retrieve all form groups",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "form-groups"
+                ],
+                "summary": "Get all form groups",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new form group",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "form-groups"
+                ],
+                "summary": "Create form group",
+                "parameters": [
+                    {
+                        "description": "Form Group Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.FormGroupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/form_groups/{id}": {
+            "get": {
+                "description": "Retrieve a form group by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "form-groups"
+                ],
+                "summary": "Get form group",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Form Group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing form group by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "form-groups"
+                ],
+                "summary": "Update form group",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Form Group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Form Group Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.FormGroupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a form group by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "form-groups"
+                ],
+                "summary": "Delete form group",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Form Group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -497,7 +1380,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.GroupsListSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "500": {
@@ -509,7 +1393,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a new group with a group name",
+                "description": "Create a new group",
                 "consumes": [
                     "application/json"
                 ],
@@ -519,7 +1403,7 @@ const docTemplate = `{
                 "tags": [
                     "groups"
                 ],
-                "summary": "Create a new group",
+                "summary": "Create group",
                 "parameters": [
                     {
                         "description": "Group Request",
@@ -535,7 +1419,8 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.GroupCreateSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -565,7 +1450,7 @@ const docTemplate = `{
                 "tags": [
                     "groups"
                 ],
-                "summary": "Get group by ID",
+                "summary": "Get group",
                 "parameters": [
                     {
                         "type": "integer",
@@ -579,7 +1464,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.GroupGetSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -596,49 +1482,7 @@ const docTemplate = `{
                     }
                 }
             },
-            "delete": {
-                "description": "Delete a group by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "groups"
-                ],
-                "summary": "Delete group",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Group ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.GroupDeleteSuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/structs.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/structs.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "patch": {
+            "put": {
                 "description": "Update an existing group by its ID",
                 "consumes": [
                     "application/json"
@@ -672,7 +1516,57 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.GroupUpdateSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a group by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Delete group",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -690,33 +1584,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/health": {
-            "get": {
-                "description": "Returns the health status of the server and database",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "general"
-                ],
-                "summary": "Health check",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
         "/reserved-name": {
             "post": {
-                "description": "Create a new reserved name with the provided name",
+                "description": "Create a new reserved name",
                 "consumes": [
                     "application/json"
                 ],
@@ -726,7 +1596,7 @@ const docTemplate = `{
                 "tags": [
                     "reserved-name"
                 ],
-                "summary": "Create a new reserved name",
+                "summary": "Create reserved name",
                 "parameters": [
                     {
                         "description": "Reserved Name Request",
@@ -742,7 +1612,53 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ReservedNameCreateSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/reserved-name/{id}": {
+            "delete": {
+                "description": "Delete a reserved name by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reserved-name"
+                ],
+                "summary": "Delete reserved name",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Reserved Name ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -772,7 +1688,7 @@ const docTemplate = `{
                 "tags": [
                     "reserved-name"
                 ],
-                "summary": "Get reserved names by name",
+                "summary": "Get reserved names",
                 "parameters": [
                     {
                         "type": "string",
@@ -786,7 +1702,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ReservedNameListSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -821,7 +1738,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ServiceListSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "500": {
@@ -859,7 +1777,8 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ServiceCreateSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -903,7 +1822,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ServiceGetSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -919,11 +1839,112 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "description": "Update an existing service by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "services"
+                ],
+                "summary": "Update a service",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Service ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Service Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ServiceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a service by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "services"
+                ],
+                "summary": "Delete a service",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Service ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/submission": {
             "post": {
-                "description": "Create a new form submission with form ID and answers",
+                "description": "Create a new form submission",
                 "consumes": [
                     "application/json"
                 ],
@@ -949,7 +1970,8 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.SubmissionCreateSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -967,9 +1989,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/submission/form/{form_id}": {
+        "/submission/service/{service_id}": {
             "get": {
-                "description": "Retrieve all submissions for a specific form by its form ID",
+                "description": "Retrieve all submissions for a specific service by its Service ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -979,12 +2001,12 @@ const docTemplate = `{
                 "tags": [
                     "submissions"
                 ],
-                "summary": "Get submissions by form ID",
+                "summary": "Get submissions by Service ID",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Form ID",
-                        "name": "form_id",
+                        "description": "Service ID",
+                        "name": "service_id",
                         "in": "path",
                         "required": true
                     }
@@ -993,7 +2015,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.SubmissionListSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -1037,7 +2060,106 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.SubmissionGetSuccessResponse"
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "post": {
+                "description": "Create a new user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Create user",
+                "parameters": [
+                    {
+                        "description": "User Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.UserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "description": "Retrieve a user by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get user by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -1053,168 +2175,168 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "description": "Update an existing user by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.UserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a user by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ErrorResponse"
+                        }
+                    }
+                }
             }
         }
     },
     "definitions": {
-        "handlers.FieldCreateSuccessResponse": {
+        "handlers.CollectionItemRequest": {
             "type": "object",
             "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.FieldRequest"
+                "collection_id": {
+                    "type": "integer"
                 },
-                "message": {
+                "collection_item": {
                     "type": "string"
                 },
-                "status": {
-                    "type": "boolean"
+                "relation_collection_items_id": {
+                    "type": "integer"
                 }
             }
         },
-        "handlers.FieldDeleteSuccessResponse": {
+        "handlers.CollectionRequest": {
             "type": "object",
+            "required": [
+                "collection_name"
+            ],
             "properties": {
-                "message": {
+                "collection_name": {
                     "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
                 }
             }
         },
-        "handlers.FieldGetSuccessResponse": {
+        "handlers.DataTypeRequest": {
             "type": "object",
+            "required": [
+                "data_type"
+            ],
             "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.FieldResponse"
-                },
-                "message": {
+                "data_type": {
                     "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
                 }
             }
         },
         "handlers.FieldRequest": {
             "type": "object",
             "required": [
-                "label",
-                "type"
+                "data_type_id",
+                "label"
             ],
             "properties": {
-                "is_required": {
-                    "type": "boolean"
+                "collection_id": {
+                    "type": "integer"
+                },
+                "data_type_id": {
+                    "type": "integer"
+                },
+                "group_id": {
+                    "type": "integer"
                 },
                 "label": {
-                    "type": "string"
-                },
-                "meta": {
-                    "type": "object"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.FieldResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "label": {
-                    "type": "string",
-                    "example": "First Name"
-                },
-                "meta": {
-                    "type": "object"
-                },
-                "type": {
-                    "type": "string",
-                    "example": "text"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                }
-            }
-        },
-        "handlers.FieldUpdateSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.FieldRequest"
-                },
-                "message": {
                     "type": "string"
                 },
                 "status": {
                     "type": "boolean"
-                }
-            }
-        },
-        "handlers.FormAnswerResponse": {
-            "type": "object",
-            "properties": {
-                "answer": {
-                    "type": "string",
-                    "example": "John Doe"
-                },
-                "answer_json": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "question_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "submission_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                }
-            }
-        },
-        "handlers.FormCreateResponse": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string",
-                    "example": "A form to collect contact information"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "service_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "title": {
-                    "type": "string",
-                    "example": "Contact Form"
                 }
             }
         },
@@ -1224,11 +2346,17 @@ const docTemplate = `{
                 "fields_id"
             ],
             "properties": {
+                "field_row": {
+                    "type": "integer"
+                },
+                "field_span": {
+                    "type": "integer"
+                },
                 "fields_id": {
                     "type": "integer"
                 },
                 "validations": {
-                    "type": "object"
+                    "type": "string"
                 }
             }
         },
@@ -1236,73 +2364,53 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "field_id",
-                "form_id",
-                "validations"
+                "form_id"
             ],
             "properties": {
                 "field_id": {
                     "type": "integer"
                 },
+                "field_row": {
+                    "type": "integer"
+                },
+                "field_span": {
+                    "type": "integer"
+                },
+                "form_group_id": {
+                    "type": "integer"
+                },
                 "form_id": {
                     "type": "integer"
                 },
-                "validations": {
-                    "type": "object"
+                "validation": {
+                    "type": "string"
                 }
             }
         },
-        "handlers.FormFieldResponse": {
+        "handlers.FormGroupRequest": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                },
-                "deleted_at": {
+                "group_name": {
                     "type": "string"
                 },
-                "fields_id": {
-                    "type": "integer",
-                    "example": 1
+                "group_row": {
+                    "type": "integer"
                 },
-                "form_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                },
-                "validations": {
-                    "type": "object"
-                }
-            }
-        },
-        "handlers.FormFieldSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.FormFieldResponse"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
+                "group_span": {
+                    "type": "integer"
                 }
             }
         },
         "handlers.FormRequest": {
             "type": "object",
             "required": [
-                "service_id",
-                "title"
+                "data_type_id",
+                "form_name"
             ],
             "properties": {
+                "data_type_id": {
+                    "type": "integer"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -1312,93 +2420,11 @@ const docTemplate = `{
                         "$ref": "#/definitions/handlers.FormFieldReference"
                     }
                 },
+                "form_name": {
+                    "type": "string"
+                },
                 "service_id": {
                     "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.FormResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string",
-                    "example": "A form to collect contact information"
-                },
-                "fields": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.FieldResponse"
-                    }
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "service_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "status": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "title": {
-                    "type": "string",
-                    "example": "Contact Form"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                },
-                "version": {
-                    "type": "integer",
-                    "example": 1
-                }
-            }
-        },
-        "handlers.GroupCreateSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.GroupRequest"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "handlers.GroupDeleteSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "handlers.GroupGetSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.GroupResponse"
-                },
-                "message": {
-                    "type": "string"
                 },
                 "status": {
                     "type": "boolean"
@@ -1416,323 +2442,331 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.GroupResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "group_name": {
-                    "type": "string",
-                    "example": "Personal Information"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                }
-            }
-        },
-        "handlers.GroupUpdateSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.GroupRequest"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "handlers.GroupsListSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.GroupResponse"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "handlers.MultipleFormFieldsSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.FormFieldResponse"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "handlers.ReservedNameCreateSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.ReservedNameResponse"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "handlers.ReservedNameListSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.ReservedNameResponse"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
         "handlers.ReservedNameRequest": {
             "type": "object",
             "required": [
-                "name"
+                "reserved_name"
             ],
             "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "admin"
-                }
-            }
-        },
-        "handlers.ReservedNameResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                },
-                "deleted_at": {
+                "reserved_name": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "name": {
-                    "type": "string",
-                    "example": "admin"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                }
-            }
-        },
-        "handlers.ServiceCreateSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.ServiceResponse"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "handlers.ServiceGetSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.ServiceResponse"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "handlers.ServiceListSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.ServiceResponse"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
                 }
             }
         },
         "handlers.ServiceRequest": {
             "type": "object",
             "required": [
-                "name"
+                "service_name"
             ],
             "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "User Service"
-                }
-            }
-        },
-        "handlers.ServiceResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                },
-                "deleted_at": {
+                "service_name": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "name": {
-                    "type": "string",
-                    "example": "User Service"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                }
-            }
-        },
-        "handlers.SubmissionCreateSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.SubmissionResponse"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "handlers.SubmissionGetSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/handlers.SubmissionResponse"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "handlers.SubmissionListSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.SubmissionResponse"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "handlers.SubmissionResponse": {
-            "type": "object",
-            "properties": {
-                "answers": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.FormAnswerResponse"
-                    }
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
-                },
-                "created_by_user_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "form_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "form_version": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "status": {
-                    "type": "string",
-                    "example": "submitted"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2024-01-01T00:00:00Z"
                 }
             }
         },
         "handlers.SubmitFormRequest": {
-            "type": "object"
-        },
-        "handlers.UpdateFormStatusRequest": {
             "type": "object",
             "required": [
-                "status"
+                "answers"
             ],
             "properties": {
+                "answers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FormAnswer"
+                    }
+                },
+                "created_by": {
+                    "type": "integer"
+                },
+                "services_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handlers.UserRequest": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "dob": {
+                    "description": "Format \"YYYY-MM-DD\"",
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "middle_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Collection": {
+            "type": "object",
+            "properties": {
+                "collectionName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.DataType": {
+            "type": "object",
+            "properties": {
+                "dataType": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Field": {
+            "type": "object",
+            "properties": {
+                "collection": {
+                    "$ref": "#/definitions/models.Collection"
+                },
+                "collectionID": {
+                    "type": "integer"
+                },
+                "dataType": {
+                    "description": "Associations",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.DataType"
+                        }
+                    ]
+                },
+                "dataTypeID": {
+                    "type": "integer"
+                },
+                "group": {
+                    "$ref": "#/definitions/models.Group"
+                },
+                "groupID": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "label": {
+                    "type": "string"
+                },
                 "status": {
+                    "description": "Using pointer for nullable boolean",
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.Form": {
+            "type": "object",
+            "properties": {
+                "dataType": {
+                    "$ref": "#/definitions/models.DataType"
+                },
+                "dataTypeID": {
+                    "description": "Added as required",
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "formName": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "No auto-increment in schema based on \"id INT\" vs \"INT NOT NULL GENERATED BY DEFAULT...\"? Ah wait, schema says \"id INT\". It doesn't denote \"GENERATED\". Usually primary keys are generated. I will assume it's NOT auto-increment if the schema explicitly omitted it, or it might be input-provided. But typically for 'id' PK it is. The schema provided for 'forms' says: \"id INT, ... CONSTRAINT pk_forms_id PRIMARY KEY (id)\". It lacks \"GENERATED BY DEFAULT AS IDENTITY\". I will NOT add autoIncrement to be safe, or user might provide IDs. But wait, typically models use uint for ID.",
+                    "type": "integer"
+                },
+                "service": {
+                    "description": "Associations",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Service"
+                        }
+                    ]
+                },
+                "serviceID": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.FormAnswer": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "type": "string"
+                },
+                "formField": {
+                    "description": "Associations",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.FormFields"
+                        }
+                    ]
+                },
+                "formFieldID": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "submission": {
+                    "$ref": "#/definitions/models.Submission"
+                },
+                "submissionID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.FormFields": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "$ref": "#/definitions/models.Field"
+                },
+                "fieldID": {
+                    "type": "integer"
+                },
+                "fieldName": {
+                    "type": "string"
+                },
+                "fieldRow": {
+                    "type": "integer"
+                },
+                "fieldSpan": {
+                    "type": "integer"
+                },
+                "form": {
+                    "description": "Associations",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Form"
+                        }
+                    ]
+                },
+                "formGroup": {
+                    "$ref": "#/definitions/models.FormGroup"
+                },
+                "formGroupID": {
+                    "type": "integer"
+                },
+                "formID": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "validation": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.FormGroup": {
+            "type": "object",
+            "properties": {
+                "groupName": {
+                    "type": "string"
+                },
+                "groupRow": {
+                    "type": "integer"
+                },
+                "groupSpan": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Group": {
+            "type": "object",
+            "properties": {
+                "groupName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Service": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "serviceName": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Submission": {
+            "type": "object",
+            "properties": {
+                "createdBy": {
+                    "type": "integer"
+                },
+                "createdOn": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "service": {
+                    "description": "Associations",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Service"
+                        }
+                    ]
+                },
+                "servicesID": {
+                    "type": "integer"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.User"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "dob": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "middleName": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "surname": {
                     "type": "string"
                 }
             }

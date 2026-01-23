@@ -1,41 +1,42 @@
 package models
 
-import (
-	"github.com/google/uuid"
-	"gorm.io/datatypes"
-	"gorm.io/gorm"
-)
+import "gorm.io/gorm"
 
-type FormFields struct {
-	gorm.Model
+type FormFields struct { // Name matches 'form_fields' table but struct convention usually Singular. However keeping as FormFields to match file/usage context or TableName. I will use 'FormField' singular for the struct type if possible, but keep filenames. The previous file used FormFields. Let's start using singular 'FormField' for struct but map to 'form_fields'.
 
-    FormID  uint
-    Form    Form `gorm:"foreignKey:FormID"`
+	ID          uint   `gorm:"primaryKey;autoIncrement"`
+	FormID      uint   `gorm:"not null"`
+	FieldID     uint   `gorm:"not null"`
+	FieldName   string `gorm:"size:50"`
+	FormGroupID *uint  `gorm:"index"`
+	Validation  string `gorm:"size:250"`
+	FieldSpan   int
+	FieldRow    int
 
-    FieldID uint
-    Field   Field `gorm:"foreignKey:FieldID"`
-
-	Validations datatypes.JSON `gorm:"type:jsonb"`
+	// Associations
+	Form      Form       `gorm:"foreignKey:FormID"`
+	Field     Field      `gorm:"foreignKey:FieldID"`
+	FormGroup *FormGroup `gorm:"foreignKey:FormGroupID"`
 }
 
-func CreateFormFields(db *gorm.DB, Fields *FormFields) error {
-	return db.Create(&Fields).Error
+func (FormFields) TableName() string {
+	return "form_fields"
 }
 
-func GetFormFields(db *gorm.DB, id uuid.UUID) (FormFields, error) {
-	var Fields FormFields
-	err := db.First(&Fields, "Fields_id = ?", id).Error
-	return Fields, err
+func CreateFormFields(db *gorm.DB, formField *FormFields) error {
+	return db.Create(formField).Error
 }
 
-func UpdateFormFields(db *gorm.DB, Fields FormFields) error {
-	return db.Save(&Fields).Error
+func GetFormFields(db *gorm.DB, id uint) (*FormFields, error) {
+	var formField FormFields
+	err := db.Preload("Form").Preload("Field").Preload("FormGroup").First(&formField, id).Error
+	return &formField, err
 }
 
-func DeleteFormFields(db *gorm.DB, id uuid.UUID) error {
+func UpdateFormFields(db *gorm.DB, formField *FormFields) error {
+	return db.Save(formField).Error
+}
+
+func DeleteFormFields(db *gorm.DB, id uint) error {
 	return db.Delete(&FormFields{}, id).Error
-}
-
-func UpdateFormStatus(db *gorm.DB, formId uint, status bool) error {
-	return db.Model(&Form{}).Where("id = ?", formId).Update("status", status).Error
 }
