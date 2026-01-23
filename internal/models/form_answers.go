@@ -8,8 +8,8 @@ import (
 
 type FormAnswer struct {
 	gorm.Model
-	SubmissionID uuid.UUID `gorm:"index"`
-	QuestionID   uuid.UUID `gorm:"index"`
+	SubmissionID uint `gorm:"index"`
+	QuestionID   uint `gorm:"index"`
 	Answer       string
 	AnswerJSON   datatypes.JSON `gorm:"type:jsonb"`
 }

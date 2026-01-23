@@ -1,0 +1,77 @@
+### Submit a Form
+POST http://localhost:8080/submission
+Content-Type: application/json
+
+{
+  "form_id": 1,
+  "answers": [
+    {
+      "question_id": 1,
+      "answer": "John Doe",
+      "answer_json": null
+    },
+    {
+      "question_id": 2,
+      "answer": "john.doe@example.com",
+      "answer_json": null
+    },
+    {
+      "question_id": 3,
+      "answer": "1234567890",
+      "answer_json": null
+    },
+    {
+      "question_id": 4,
+      "answer": "",
+      "answer_json": {
+        "selected_options": ["option1", "option2"],
+        "other": "Custom option"
+      }
+    }
+  ]
+}
+
+### Get Submission by ID
+GET http://localhost:8080/submission/1
+Content-Type: application/json
+
+### Get Submissions by Form ID
+GET http://localhost:8080/submission/form/1
+Content-Type: application/json
+
+### Submit a Form with JSON Answer
+POST http://localhost:8080/submission
+Content-Type: application/json
+
+{
+  "form_id": 1,
+  "answers": [
+    {
+      "question_id": 5,
+      "answer": "",
+      "answer_json": {
+        "rating": 5,
+        "feedback": "Great service!",
+        "recommend": true
+      }
+    }
+  ]
+}
+
+### Submit a Form - Simple Text Answers
+POST http://localhost:8080/submission
+Content-Type: application/json
+
+{
+  "form_id": 1,
+  "answers": [
+    {
+      "question_id": 1,
+      "answer": "Jane Smith"
+    },
+    {
+      "question_id": 2,
+      "answer": "jane.smith@example.com"
+    }
+  ]
+}

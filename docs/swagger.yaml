@@ -26,18 +26,6 @@ definitions:
         type: boolean
     type: object
   handlers.FieldRequest:
-    properties:
-      label:
-        example: First Name
-        type: string
-      meta:
-        type: object
-      type:
-        example: text
-        type: string
-    required:
-    - label
-    - type
     type: object
   handlers.FieldResponse:
     properties:
@@ -69,6 +57,31 @@ definitions:
         type: string
       status:
         type: boolean
+    type: object
+  handlers.FormAnswerResponse:
+    properties:
+      answer:
+        example: John Doe
+        type: string
+      answer_json:
+        type: string
+      created_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      deleted_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      question_id:
+        example: 1
+        type: integer
+      submission_id:
+        example: 1
+        type: integer
+      updated_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
     type: object
   handlers.FormCreateResponse:
     properties:
@@ -278,6 +291,121 @@ definitions:
       updated_at:
         example: "2024-01-01T00:00:00Z"
         type: string
+    type: object
+  handlers.ServiceCreateSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.ServiceResponse'
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.ServiceGetSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.ServiceResponse'
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.ServiceListSuccessResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handlers.ServiceResponse'
+        type: array
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.ServiceRequest:
+    properties:
+      name:
+        example: User Service
+        type: string
+    required:
+    - name
+    type: object
+  handlers.ServiceResponse:
+    properties:
+      created_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      deleted_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: User Service
+        type: string
+      updated_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+    type: object
+  handlers.SubmissionCreateSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.SubmissionResponse'
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.SubmissionGetSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handlers.SubmissionResponse'
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.SubmissionListSuccessResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handlers.SubmissionResponse'
+        type: array
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  handlers.SubmissionResponse:
+    properties:
+      answers:
+        items:
+          $ref: '#/definitions/handlers.FormAnswerResponse'
+        type: array
+      created_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      created_by_user_id:
+        example: 1
+        type: integer
+      deleted_at:
+        type: string
+      form_id:
+        example: 1
+        type: integer
+      form_version:
+        example: 1
+        type: integer
+      id:
+        example: 1
+        type: integer
+      status:
+        example: submitted
+        type: string
+      updated_at:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+    type: object
+  handlers.SubmitFormRequest:
     type: object
   handlers.UpdateFormStatusRequest:
     properties:
@@ -792,6 +920,171 @@ paths:
       summary: Get reserved names by name
       tags:
       - reserved-name
+  /services:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all services
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ServiceListSuccessResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get all services
+      tags:
+      - services
+    post:
+      consumes:
+      - application/json
+      description: Create a new service with the provided name
+      parameters:
+      - description: Service Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ServiceRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.ServiceCreateSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Create a new service
+      tags:
+      - services
+  /services/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a service by its ID
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ServiceGetSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get service by ID
+      tags:
+      - services
+  /submission:
+    post:
+      consumes:
+      - application/json
+      description: Create a new form submission with form ID and answers
+      parameters:
+      - description: Submission Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.SubmitFormRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.SubmissionCreateSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Submit a form
+      tags:
+      - submissions
+  /submission/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a submission by its ID
+      parameters:
+      - description: Submission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SubmissionGetSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get submission by ID
+      tags:
+      - submissions
+  /submission/form/{form_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all submissions for a specific form by its form ID
+      parameters:
+      - description: Form ID
+        in: path
+        name: form_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SubmissionListSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ErrorResponse'
+      summary: Get submissions by form ID
+      tags:
+      - submissions
 schemes:
 - http
 - https

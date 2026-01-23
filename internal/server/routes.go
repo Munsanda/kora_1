@@ -79,11 +79,17 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	services := r.Group("/services")
 	{
-		services.GET("/:id", handlers.GetserviceHandler)
+		services.GET("/:id", handlers.GetServiceHandler)
 		services.GET("/", handlers.ListServicesHandler)
+		services.POST("/", handlers.AddServiceHandler)
 	}
 
-	r.POST("submission")
+	submissions := r.Group("/submission")
+	{
+		submissions.POST("", handlers.SubmitFormHandler)
+		submissions.GET("/:id", handlers.GetSubmissionHandler)
+		submissions.GET("/form/:form_id", handlers.GetSubmissionsByFormIDHandler)
+	}
 
 	return r
 }
