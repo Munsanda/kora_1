@@ -11,8 +11,9 @@ type FormFields struct {
 
 	FormID      uint           `gorm:"index;not null"`
 	FieldsID    uint           `gorm:"not null;index"`
+	Field       Field          `gorm:"foreignKey:FieldsID"`
 	Validations datatypes.JSON `gorm:"type:jsonb"`
-	GroupID     *uint          `gorm:"index"` // nullable - allows fields to be ungrouped
+	GroupID     *uint          `gorm:"index"`
 }
 
 func CreateFormFields(db *gorm.DB, Fields *FormFields) error {

@@ -153,6 +153,7 @@ type UpdateFormStatusRequest struct {
 type FormFieldRequest struct {
 	FormID      uint           `json:"form_id" binding:"required"`
 	FieldsID    uint           `json:"fields_id" binding:"required"`
+	GroupID     *uint          `json:"group_id"`
 	Validations datatypes.JSON `json:"validations" binding:"required" swaggertype:"object"`
 }
 
@@ -164,6 +165,7 @@ type FormFieldResponse struct {
 	DeletedAt   *string                `json:"deleted_at,omitempty"`
 	FormID      uint                   `json:"form_id" example:"1"`
 	FieldsID    uint                   `json:"fields_id" example:"1"`
+	GroupID     *uint                  `json:"group_id,omitempty" example:"2"`
 	Validations map[string]interface{} `json:"validations" swaggertype:"object"`
 }
 
@@ -203,6 +205,7 @@ func CreateFormFieldsHandler(c *gin.Context) {
 	formField := &models.FormFields{
 		FormID:      request.FormID,
 		FieldsID:    request.FieldsID,
+		GroupID:     request.GroupID,
 		Validations: request.Validations,
 	}
 	err := models.CreateFormFields(database.DB, formField)
@@ -225,6 +228,7 @@ func CreateFormFieldsHandler(c *gin.Context) {
 		UpdatedAt:   formField.UpdatedAt.Format("2006-01-02T15:04:05Z"),
 		DeletedAt:   nil,
 		FormID:      formField.FormID,
+		GroupID:     formField.GroupID,
 		FieldsID:    formField.FieldsID,
 		Validations: validationsMap,
 	}
@@ -766,21 +770,19 @@ func GetGroupFieldsHandler(c *gin.Context) {
 		return
 	}
 
-	formFields, err := models.GetAllGroupFields(database.DB, formID, groupID)
+	groupFields, err := models.GetAllGroupFields(database.DB, formID, groupID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
 		return
 	}
 
-	// Transform FormFields to response format with complete Field details
+	fmt.Printf("Deepmind Debug: Found %d group fields for formID %d, groupID %d\n", len(groupFields), formID, groupID)
+
+	// Transform to response format with complete Field and FormFields details
 	var responses []GroupFieldResponse
-	for _, formField := range formFields {
-		// Get the associated Field
-		field, err := models.GetFields(database.DB, formField.FieldsID)
-		if err != nil {
-			// Skip fields that can't be found
-			continue
-		}
+	for _, groupField := range groupFields {
+		field := groupField.Field
+		formField := groupField.FormFields
 
 		// Convert validations from datatypes.JSON to map[string]interface{}
 		var validationsMap map[string]interface{}
@@ -816,4 +818,31 @@ func GetGroupFieldsHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, helpers.NewSuccess(responses, "Group fields retrieved successfully"))
+}
+
+// UpdateGroupFieldsHandler updates fields of a group in a specific form
+// @Summary      Update group fields
+// @Description  Update the fields associated with a group within a specific form
+// @Tags         groups
+// @Accept       json
+// @Produce      json
+// @Param        request  body      AddFieldsToGroupRequest  true  "Update Group Fields Request"
+// @Success      200      {object}  object
+// @Failure      400      {object}  structs.ErrorResponse
+// @Failure      500      {object}  structs.ErrorResponse
+// @Router       /groups/update-fields [patch]
+func UpdateGroupFieldsHandler(c *gin.Context) {
+	var request AddFieldsToGroupRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, helpers.NewError(err.Error(), http.StatusBadRequest))
+		return
+	}
+
+	err := models.UpdateGroupFields(database.DB, request.FormID, request.GroupID, request.FieldIDs)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, helpers.NewError(err.Error(), http.StatusInternalServerError))
+		return
+	}
+
+	c.JSON(http.StatusOK, helpers.NewSuccess(request, "Group fields updated successfully"))
 }

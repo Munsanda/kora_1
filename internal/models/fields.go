@@ -10,10 +10,10 @@ type Field struct {
 	Label string `gorm:"size:255;not null"`
 	Type  string `gorm:"size:50;not null"`
 
-	Meta datatypes.JSON `gorm:"many2many:form_fields;"`
+	Meta datatypes.JSON `gorm:"type:json"`
 
-	Forms []FormFields `gorm:"many2many:form_fields;"`
-	
+	Forms []FormFields `gorm:"foreignKey:FieldsID"`
+
 	IsRequired bool `gorm:"default:false"`
 }
 

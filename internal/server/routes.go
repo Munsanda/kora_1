@@ -59,13 +59,16 @@ func (s *Server) RegisterRoutes() http.Handler {
 		groups.POST("/", handlers.CreateGroupHandler)
 		groups.PATCH("/:id", handlers.UpdateGroupHandler)
 		groups.DELETE("/:id", handlers.DeleteGroupHandler)
+
+		groups.POST("/add-fields", handlers.CreateGroupFieldsHandler)
+		groups.GET("/get-fields", handlers.GetGroupFieldsHandler)
+		groups.PATCH("/update-fields", handlers.UpdateGroupFieldsHandler)
 	}
 
 	form_fields := r.Group("/form_fields")
 	{
 		form_fields.GET("/:id")
-		form_fields.POST("/")
-		// post multiple fields to a form
+		form_fields.POST("/", handlers.CreateFormFieldsHandler)
 		// post multiple fields to a form
 		form_fields.POST("/multiple", handlers.CreateMultipleFormFieldsHandler)
 		form_fields.PATCH("/:id")
